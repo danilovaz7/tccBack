@@ -1,0 +1,34 @@
+POST http://localhost:3000/usuarios
+Content-Type: application/json
+
+{
+    "nome": "vithcnezo",
+    "email": "enzo@mail.com",
+    "senha": "123",
+    "foto": "aaaa",
+    "matricula":"112344" ,
+    "tipo_usuario_id": 2,
+    "nivel": 22
+}
+
+###
+
+GET http://localhost:3000/usuarios
+
+
+###
+
+GET http://localhost:3000/usuarios/7
+
+###
+
+PUT http://localhost:3000/usuarios/1
+Content-Type: application/json
+
+{
+    "nome": "João da Silva"
+}
+
+###
+
+DELETE http://localhost:3000/usuarios/2

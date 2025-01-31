@@ -1,0 +1,32 @@
+GET http://localhost:3000/materias
+###
+
+GET http://localhost:3000/materias/10
+
+
+###
+
+GET http://localhost:3000/elos
+
+###
+
+POST http://localhost:3000/materias
+Content-Type: application/json
+
+{
+    "nome": "Meia maluco quente",
+    "icone": "aa"
+}
+
+###
+
+PUT http://localhost:3000/materias/1
+Content-Type: application/json
+
+{
+    "icone": "Meia maluco quente"
+}
+
+###
+
+DELETE http://localhost:3000/materias/3

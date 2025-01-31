@@ -1,0 +1,31 @@
+POST http://localhost:3000/users/1/comments
+Content-Type: application/json
+
+{
+    "productId": 1,
+    "content": "Nao coube em mim >.>",
+    "rating": 1
+}
+
+###
+
+GET http://localhost:3000/users/1/comments
+
+
+###
+
+GET http://localhost:3000/products/1/comments
+
+###
+
+PUT http://localhost:3000/comments/1
+Content-Type: application/json
+
+{
+    "content": "Achei paia",
+    "rating": "1"
+}
+
+###
+
+DELETE http://localhost:3000/comments/2
