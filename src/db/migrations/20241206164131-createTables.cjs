@@ -4,6 +4,52 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
 
+    await queryInterface.createTable('escolas', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+      },
+      nome: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+    });
+
+    await queryInterface.createTable('turmas', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+      },
+      nome: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+    });
+
     await queryInterface.createTable('tipo_usuarios', {
       id: {
         type: Sequelize.INTEGER,
@@ -64,6 +110,24 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
+      id_turma: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'turmas',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE'
+      },
+      id_escola: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'escolas',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE'
+      },
       tipo_usuario_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -71,8 +135,7 @@ module.exports = {
           model: 'tipo_usuarios',
           key: 'id',
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE'
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -174,7 +237,6 @@ module.exports = {
       },
     });
 
-    // Modificar a tabela de elo_materias para usar a nova estrutura de elos e subelos
     await queryInterface.createTable('elo_materias', {
       id: {
         type: Sequelize.INTEGER,
@@ -232,7 +294,6 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
-      // Garantir que o elo de um usuário para uma matéria seja único
       unique_elo_per_usuario_materia: {
         type: Sequelize.STRING,
         unique: true,
@@ -454,15 +515,19 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: false,
       },
+      total_perguntas: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
       total_perguntas_acertadas: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
-      total_disputas_ganhas: {
+      total_disputas: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
-      total_perguntas_respostas: {
+      total_disputas_ganhas: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
@@ -492,6 +557,8 @@ module.exports = {
     await queryInterface.dropTable('elos');
     await queryInterface.dropTable('materias');
     await queryInterface.dropTable('usuarios');
+    await queryInterface.dropTable('turmas');
+    await queryInterface.dropTable('escolas');
     await queryInterface.dropTable('tipo_usuarios');
   }
 };

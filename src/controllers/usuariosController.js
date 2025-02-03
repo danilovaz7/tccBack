@@ -3,9 +3,9 @@ import EloMateria from "../models/EloMateria.js"
 import Materia from "../models/Materia.js"
 
 async function createUser(req, res) {
-    const { nome, email, senha, foto,matricula, experiencia, nivel, tipo_usuario_id } = req.body;
+    const { nome, email, senha, foto,matricula, experiencia, nivel, tipo_usuario_id, escola_id,turma_id } = req.body;
 
-    const usuario = Usuario.build({ nome, email, senha,foto, matricula, experiencia, nivel, tipo_usuario_id });
+    const usuario = Usuario.build({ nome, email, senha,foto, matricula, experiencia, nivel, tipo_usuario_id, escola_id,turma_id });
 
     try {
         await usuario.validate();
