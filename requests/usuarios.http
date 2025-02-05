@@ -2,13 +2,16 @@ POST http://localhost:3000/usuarios
 Content-Type: application/json
 
 {
-    "nome": "vithcnezo",
-    "email": "enzo@mail.com",
-    "senha": "123",
+    "nome": "luka",
+    "email": "dontit@mail.com",
+    "senha": "000",
     "foto": "aaaa",
-    "matricula":"112344" ,
+    "id_turma": 3,
+    "id_escola": 1,
+    "matricula":"900990",
+    "experiencia": 0,
     "tipo_usuario_id": 2,
-    "nivel": 22
+    "nivel": 12
 }
 
 ###

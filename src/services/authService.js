@@ -1,39 +1,37 @@
-import Session from '../models/Session.js'
+import jwt from 'jsonwebtoken';
 
+export async function authenticate(req, res, next) {
+    // Obtém o token diretamente do cookie
 
-async function authenticate(req, res, next) {
+    const token = req.cookies.token;
 
-
-    if (!req.cookies.Authentication) {
-        return res.status(401).send('Você não está autenticado! Faça login para acessar esta página!')
+    // Se não houver token, retorna 403
+    if (!token) {
+        return res.status(403).json({ message: "Forbidden", error: "Token is missing" });
     }
 
-    const session = await Session.findOne({ where: { uuid: req.cookies.Authentication } })
+    try {
+        // Verifica e decodifica o token JWT, usando a chave secreta armazenada em `process.env.JWT_SECRET`
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+ 
+        // Anexa o usuário decodificado à requisição, incluindo o tipo do usuário
+        req.user = decoded;
+        // Exemplo: Acessando o tipo de usuário (se necessário)
+      
 
+        // Chama o próximo middleware ou rota
+        next();
+    } catch (error) {
+        // Se o token for inválido ou expirado, retorna erro 401
+        let errorMessage = "Unauthorized";
+        let errorDetail = error.message;
 
-    if (!session) {
-        return res.status(401).send('Você não está autenticado! Faça login para acessar esta página!')
-    }
-
-    if (session.expires < new Date()) {
-        await session.destroy()
-        return res.status(401).send('Sua sessão expirou! Faça login novamente')
-    }
-
-    const user = await session.getUsuario()
-
-    req.user = user
-    next()
-}
-
-function authorize(...userTypes) {
-    return (req, res, next) => {
-        
-        if (!userTypes.includes(req.user.type)) {
-            return res.status(403).send('Você não tem permissão para acessar esta página!')
+        // Se o erro for de token expirado, informe especificamente
+        if (error.name === 'TokenExpiredError') {
+            errorMessage = "Token Expired";
+            errorDetail = "The token has expired.";
         }
-    
-        next()
+
+        return res.status(401).json({ message: errorMessage, error: errorDetail });
     }
 }
-export default { authenticate, authorize }

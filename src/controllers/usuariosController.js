@@ -1,16 +1,18 @@
 import Usuario from "../models/Usuario.js"
 import EloMateria from "../models/EloMateria.js"
 import Materia from "../models/Materia.js"
+import Turmas from "../models/Turmas.js";
 
 async function createUser(req, res) {
-    const { nome, email, senha, foto,matricula, experiencia, nivel, tipo_usuario_id, escola_id,turma_id } = req.body;
+    const { nome, email, senha, foto,matricula, experiencia, nivel, tipo_usuario_id, id_escola,id_turma } = req.body;
 
-    const usuario = Usuario.build({ nome, email, senha,foto, matricula, experiencia, nivel, tipo_usuario_id, escola_id,turma_id });
+    const usuario = Usuario.build({ nome, email, senha, foto, matricula, experiencia,id_turma, id_escola, nivel, tipo_usuario_id });
 
+    console.log(usuario)
     try {
         await usuario.validate();
     } catch (error) {
-        return res.status(400).json({ error: 'Informações de usuário inválidas: ' + error.message });
+        return res.status(400).json({ error: 'Informações de usuário inválidas: ' + error.message }); 
     }
 
     try {

@@ -29,7 +29,7 @@ router.delete('/materias/:id',materiasController.deleteMateria)
 router.get('/eloMaterias/:id',materiasController.getEloMateriasByUser)
 
 router.post('/login',loginController.login)
-router.post('/eu', pegarUsuarioDoToken)
+router.get('/eu', pegarUsuarioDoToken)
 
 export default router
 
@@ -50,16 +50,20 @@ function checaToken(req, res, next) {
 }
 
 function pegarUsuarioDoToken(req, res) {
-    const headers = req.headers;
-    const authorizationHeader = headers.authorization;
-    if (!authorizationHeader) {
-        return res.status(403).json({ message: "Forbidden" })
+    try {
+        const authorizationHeader = req.headers.authorization;
+        if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
+            return res.status(403).json({ message: "Token ausente ou inválido" });
+        }
+
+        const token = authorizationHeader.split(" ")[1];
+        if (!token) {
+            return res.status(403).json({ message: "Token inválido" });
+        }
+
+        const usuarioDoToken = jwt.verify(token, process.env.SECRET_KEY); // Verifica validade
+        res.json(usuarioDoToken);
+    } catch (error) {
+        return res.status(401).json({ message: "Token inválido ou expirado", error: error.message });
     }
-    const [, token] = authorizationHeader.split(' ');
-    if (!token) {
-        return res.status(403).json({ message: "Forbidden" })
-    }
-    const usuarioDoToken = jwt.decode(token);
-   
-    res.json(usuarioDoToken);
 }
