@@ -4,11 +4,12 @@ import Materia from "../models/Materia.js"
 import Turmas from "../models/Turmas.js";
 
 async function createUser(req, res) {
-    const { nome, email, senha, foto,matricula, experiencia, nivel, tipo_usuario_id, id_escola,id_turma } = req.body;
+    const { nome, email, senha, foto,matricula, experiencia, nivel, tipo_usuario_id, id_escola,id_turma,genero } = req.body;
+    console.log(req.body)
 
-    const usuario = Usuario.build({ nome, email, senha, foto, matricula, experiencia,id_turma, id_escola, nivel, tipo_usuario_id });
+    const usuario = Usuario.build({ nome, email, senha, foto, matricula, experiencia,id_turma, id_escola, nivel, tipo_usuario_id,genero });
 
-    console.log(usuario)
+    console.log('Antes de salvar o usuário:', usuario);
     try {
         await usuario.validate();
     } catch (error) {

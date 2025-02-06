@@ -11,7 +11,8 @@ Content-Type: application/json
     "matricula":"900990",
     "experiencia": 0,
     "tipo_usuario_id": 2,
-    "nivel": 12
+    "nivel": 12,
+     "genero":"M"
 }
 
 ###

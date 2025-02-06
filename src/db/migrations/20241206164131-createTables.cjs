@@ -98,6 +98,10 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false
       },
+      genero: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
       nivel: {
         type: Sequelize.INTEGER,
         defaultValue: 1,
