@@ -11,6 +11,7 @@ import RespostaQuiz from './RespostaQuiz.js';
 import EstatisticaGeral from './EstatisticaGeral.js';
 import Turmas from './Turmas.js';
 import Escolas from './Escolas.js';
+import Avatar from './Avatar.js';
 
 // Associações relacionadas a TipoUsuario
 TipoUsuario.hasMany(Usuario, { foreignKey: 'tipo_usuario_id', as: 'usuarios' });
@@ -21,6 +22,9 @@ Usuario.belongsTo(Turmas, { foreignKey: 'id_turma', as: 'turma' });
 
 Escolas.hasMany(Usuario, { foreignKey: 'id_escola', as: 'usuarios' });
 Usuario.belongsTo(Escolas, { foreignKey: 'id_escola', as: 'escola' });
+
+Avatar.hasMany(Usuario, { foreignKey: 'id_avatar', as: 'usuarios' });
+Usuario.belongsTo(Avatar, { foreignKey: 'id_avatar', as: 'avatar' });
 
 // Associações relacionadas a Usuarios e EstatisticasGerais
 Usuario.hasOne(EstatisticaGeral, { foreignKey: 'usuario_id', as: 'estatisticas_gerais' });

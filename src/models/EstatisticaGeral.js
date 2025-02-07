@@ -18,7 +18,17 @@ const EstatisticaGeral = database.define('estatisticas_gerais', {
     },
     onDelete: 'CASCADE',
   },
+  total_perguntas: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
   total_perguntas_acertadas: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
+  total_disputas: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
@@ -27,12 +37,7 @@ const EstatisticaGeral = database.define('estatisticas_gerais', {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
-  },
-  total_perguntas_respostas: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 0,
-  },
+  }
 }, {
   timestamps: true,
 });

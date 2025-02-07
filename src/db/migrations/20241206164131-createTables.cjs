@@ -73,6 +73,33 @@ module.exports = {
       },
     });
 
+    await queryInterface.createTable('avatares', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+      },
+      nome: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      caminho: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+    });
+
     // Tabela de usuários
     await queryInterface.createTable('usuarios', {
       id: {
@@ -94,10 +121,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      foto: {
-        type: Sequelize.TEXT,
-        allowNull: false
-      },
       genero: {
         type: Sequelize.TEXT,
         allowNull: false
@@ -113,6 +136,15 @@ module.exports = {
       experiencia: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
+      },
+      id_avatar: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'avatares',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE'
       },
       id_turma: {
         type: Sequelize.INTEGER,
@@ -561,6 +593,7 @@ module.exports = {
     await queryInterface.dropTable('elos');
     await queryInterface.dropTable('materias');
     await queryInterface.dropTable('usuarios');
+    await queryInterface.dropTable('avatares');
     await queryInterface.dropTable('turmas');
     await queryInterface.dropTable('escolas');
     await queryInterface.dropTable('tipo_usuarios');

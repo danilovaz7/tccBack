@@ -5,6 +5,8 @@ import usuariosController from '../controllers/usuariosController.js'
 import tiposController from '../controllers/tiposController.js'
 import materiasController from '../controllers/materiasController.js'
 import loginController from '../controllers/loginController.js'
+import estatisticasController from '../controllers/estatisticasController.js'
+import avataresController from '../controllers/avataresController.js'
 
 
 const router = Router()
@@ -14,6 +16,8 @@ router.get('/usuarios',usuariosController.getUsers)
 router.get('/usuarios/:id',usuariosController.getUserById)
 router.put('/usuarios/:id', usuariosController.updateUser)
 router.delete('/usuarios/:id',usuariosController.deleteUser)
+router.get('/estatisticas/:id',estatisticasController.getEstatisticasByUser)
+router.put('/estatisticas/:id',estatisticasController.updateEstatisticasByUser)
 
 router.post('/tipos',tiposController.createType)
 router.get('/tipos',tiposController.getTypes)
@@ -27,6 +31,8 @@ router.get('/materias/:id',materiasController.getMateriaById)
 router.put('/materias/:id', materiasController.updateMateria)
 router.delete('/materias/:id',materiasController.deleteMateria)
 router.get('/eloMaterias/:id',materiasController.getEloMateriasByUser)
+
+router.get('/avatares',avataresController.getAvatares)
 
 router.post('/login',loginController.login)
 router.get('/eu', pegarUsuarioDoToken)

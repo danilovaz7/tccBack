@@ -26,10 +26,6 @@ const Usuario = database.define('usuarios', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  foto: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
   nivel: {
     type: DataTypes.INTEGER,
     allowNull: false,
