@@ -7,7 +7,7 @@ import materiasController from '../controllers/materiasController.js'
 import loginController from '../controllers/loginController.js'
 import estatisticasController from '../controllers/estatisticasController.js'
 import avataresController from '../controllers/avataresController.js'
-
+import escolasController from '../controllers/escolasController.js'
 
 const router = Router()
 
@@ -33,6 +33,8 @@ router.delete('/materias/:id',materiasController.deleteMateria)
 router.get('/eloMaterias/:id',materiasController.getEloMateriasByUser)
 
 router.get('/avatares',avataresController.getAvatares)
+
+router.get('/escolas',escolasController.getEscolas)
 
 router.post('/login',loginController.login)
 router.get('/eu', pegarUsuarioDoToken)
