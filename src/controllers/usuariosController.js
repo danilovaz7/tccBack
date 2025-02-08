@@ -63,18 +63,28 @@ async function createUser(req, res) {
 
 
 async function getUsers(req, res) {
-    const usuarios = await Usuario.findAll({
-        where: {tipo_usuario_id: 2},
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+    console.log("LIMITEEE"+limit);
+
+    const queryOptions = {
+        where: { tipo_usuario_id: 2 },
         order: [['nivel', 'DESC']],
-        include: 'avatar'
-    })
+        include: 'avatar',
+    };
+    
+    if (limit !== null) {
+        queryOptions.limit = limit;
+    }
+
+    const usuarios = await Usuario.findAll(queryOptions);
 
     if (usuarios) {
-        res.json(usuarios)
+        res.json(usuarios);
     } else {
-        res.status(500).json({ error: 'Erro ao buscar usuários' })
+        res.status(500).json({ error: 'Erro ao buscar usuários' });
     }
 }
+
 
 async function getUserById(req, res) {
     const { id } = req.params
