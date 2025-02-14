@@ -64,12 +64,11 @@ async function createUser(req, res) {
 
 async function getUsers(req, res) {
     const limit = req.query.limit ? parseInt(req.query.limit) : null;
-    console.log("LIMITEEE"+limit);
 
     const queryOptions = {
         where: { tipo_usuario_id: 2 },
         order: [['nivel', 'DESC']],
-        include: 'avatar',
+        include: ['avatar', 'estatisticas_gerais'],
     };
     
     if (limit !== null) {
