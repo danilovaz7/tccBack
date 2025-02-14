@@ -40,7 +40,7 @@ async function createUser(req, res) {
 
         await Promise.all(materias.map(async (materia) => {
             const materiaId = materia.id;
-            const materiaElo = EloMateria.build({ usuario_id:userId, materia_id:materiaId, elo_id: 1, subelo_id: 1, perguntas_acertadas: 0 });
+            const materiaElo = EloMateria.build({ usuario_id:userId, materia_id:materiaId, elo_id: 1, subelo_id: 1,  respostas_corretas_elo: 0,respostas_corretas_total: 0 });
 
             try {
                 await materiaElo.validate();

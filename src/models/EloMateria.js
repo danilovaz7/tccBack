@@ -44,7 +44,12 @@ const EloMateria = database.define('elo_materias', {
     },
     onDelete: 'CASCADE',
   },
-  perguntas_acertadas: {
+  respostas_corretas_elo: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
+  respostas_corretas_total: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,

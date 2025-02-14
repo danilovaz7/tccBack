@@ -316,7 +316,11 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: true,
       },
-      perguntas_acertadas: {
+      respostas_corretas_elo: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
+      respostas_corretas_total: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
