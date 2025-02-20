@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import jwt from 'jsonwebtoken'
 
+import { authenticate } from '../services/authService.js'
 import usuariosController from '../controllers/usuariosController.js'
 import tiposController from '../controllers/tiposController.js'
 import materiasController from '../controllers/materiasController.js'
