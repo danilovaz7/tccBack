@@ -34,6 +34,7 @@ router.delete('/materias/:id',materiasController.deleteMateria)
 router.get('/eloMaterias/:id',materiasController.getEloMateriasByUser)
 
 router.get('/materias/:nmMateria/perguntas',materiasController.getPerguntasMateria)
+router.get('/materias/perguntas/:id/alternativas',materiasController.getAternativasPerguntaMateria)
 
 router.get('/avatares',avataresController.getAvatares)
 

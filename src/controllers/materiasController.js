@@ -1,7 +1,6 @@
 import Materia from "../models/Materia.js"
 import EloMateria from "../models/EloMateria.js"
-import Elo from "../models/Elo.js"
-import Subelo from "../models/Subelo.js"
+import Alternativa from  "../models/Alternativa.js"
 import Pergunta from  "../models/Pergunta.js"
 
 async function createMateria(req, res) {
@@ -53,6 +52,18 @@ async function getPerguntasMateria(req, res) {
 
     if (perguntasMateria) {
         res.json(perguntasMateria)
+    } else {
+        res.status(404).json({ error: 'perguntasMateria não encontrado' })
+    }
+}
+
+async function getAternativasPerguntaMateria(req, res) {
+    const { id } = req.params
+
+    const alternativas = await Alternativa.findAll({where: {pergunta_id:id}})
+
+    if (alternativas) {
+        res.json(alternativas)
     } else {
         res.status(404).json({ error: 'perguntasMateria não encontrado' })
     }
@@ -129,5 +140,6 @@ export default {
     updateMateria,
     deleteMateria,
     getEloMateriasByUser,
-    getPerguntasMateria
+    getPerguntasMateria,
+    getAternativasPerguntaMateria
 }
