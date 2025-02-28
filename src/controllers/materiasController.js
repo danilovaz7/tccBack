@@ -46,9 +46,13 @@ async function getMateriaById(req, res) {
 
 async function getPerguntasMateria(req, res) {
     const { nmMateria } = req.params
+
     const materia = await Materia.findOne({where: {nome:nmMateria}})
 
-    const perguntasMateria = await Pergunta.findAll({where: {materia_id: materia.id}})
+   let perguntasMateria = await Pergunta.findAll({
+            where: { materia_id: materia.id },
+            limit: 6
+        });
 
     if (perguntasMateria) {
         res.json(perguntasMateria)
@@ -69,14 +73,13 @@ async function getAternativasPerguntaMateria(req, res) {
     }
 }
 
-
 async function getEloMateriasByUser(req, res) {
     const { id } = req.params
 
     const eloMaterias = await EloMateria.findAll({
         where: { usuario_id: id },
         include: ['elo', 'materia'],
-        order: [['materia_id', 'ASC']] // Ordena pelo campo materia_id em ordem crescente
+        order: [['materia_id', 'ASC']] 
       });
       
 
@@ -87,6 +90,62 @@ async function getEloMateriasByUser(req, res) {
     }
 }
 
+async function getEloMateriasByUserAndMateria(req, res) {
+    const { id, nmMateria  } = req.params
+    const materia = await Materia.findOne({where: {nome:nmMateria}})
+
+   const eloMateriaUnic = await EloMateria.findOne({where: {usuario_id: id,  materia_id: materia.id }})
+      
+
+    if (eloMateriaUnic) {
+        res.json(eloMateriaUnic.toJSON())
+    } else {
+        res.status(500).json({ error: 'Erro ao buscar eloMateriaUnic' })
+    }
+}
+async function updateEloMateria(req, res) {
+    const { id, nmMateria } = req.params;
+    let { elo_id, subelo_id, respostas_corretas_elo, respostas_corretas_total } = req.body;
+
+    const materia = await Materia.findOne({ where: { nome: nmMateria } });
+    if (!materia) {
+        return res.status(404).json({ error: 'Matéria não encontrada' });
+    }
+
+    const eloMateriaUnic = await EloMateria.findOne({ where: { usuario_id: id, materia_id: materia.id } });
+    if (!eloMateriaUnic) {
+        return res.status(404).json({ error: 'eloMateriaUnic não encontrado' });
+    }
+
+    console.log(elo_id, subelo_id, respostas_corretas_elo, respostas_corretas_total);
+
+    if (respostas_corretas_elo >= 30) {
+        respostas_corretas_elo = 0;
+        subelo_id = 1
+    }
+
+    console.log(elo_id, subelo_id, respostas_corretas_elo, respostas_corretas_total);
+
+    if (elo_id !== undefined) eloMateriaUnic.elo_id = elo_id;
+    if (subelo_id !== undefined) eloMateriaUnic.subelo_id = subelo_id;
+    if (respostas_corretas_elo !== undefined) eloMateriaUnic.respostas_corretas_elo = respostas_corretas_elo;
+    if (respostas_corretas_total !== undefined) eloMateriaUnic.respostas_corretas_total = respostas_corretas_total;
+
+    try {
+        await eloMateriaUnic.validate();
+    } catch (error) {
+        return res.status(400).json({ error: 'Informações de eloMateriaUnic inválidas: ' + error.message });
+    }
+
+    console.log(eloMateriaUnic);
+
+    try {
+        await eloMateriaUnic.save();
+        res.json(eloMateriaUnic.toJSON());
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao atualizar eloMateriaUnic: ' + error.message });
+    }
+}
 
 
 async function updateMateria(req, res) {
@@ -141,5 +200,7 @@ export default {
     deleteMateria,
     getEloMateriasByUser,
     getPerguntasMateria,
-    getAternativasPerguntaMateria
+    getAternativasPerguntaMateria,
+    getEloMateriasByUserAndMateria,
+    updateEloMateria
 }
