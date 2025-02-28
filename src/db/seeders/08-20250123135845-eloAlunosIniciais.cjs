@@ -94,16 +94,7 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      {
-        usuario_id: 2,
-        materia_id: 10,
-        elo_id: 1,
-        subelo_id: 1,
-        respostas_corretas_elo: 0,
-        respostas_corretas_total: 0,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
+
     ]);
   },
 

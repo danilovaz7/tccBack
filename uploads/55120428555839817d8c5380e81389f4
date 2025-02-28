@@ -1,4 +1,0 @@
-nome;email;senha;genero;nivel;matricula;experiencia;id_avatar;id_turma;id_escola;tipo_usuario_id;createdAt;updatedAt
-Getulio Vargas;get@gmail.com;10;M;1;123456;0;8;3;1;2;now();now()
-David Nascimento;david@gmail.com;4433;M;1;239099;0;4;3;1;2;now();now()
-Tancredo Neves;tan@gmail.com;100;M;1;991122;0;5;3;1;2;now();now()

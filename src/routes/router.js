@@ -33,6 +33,8 @@ router.put('/materias/:id', materiasController.updateMateria)
 router.delete('/materias/:id',materiasController.deleteMateria)
 router.get('/eloMaterias/:id',materiasController.getEloMateriasByUser)
 
+router.get('/materias/:nmMateria/perguntas',materiasController.getPerguntasMateria)
+
 router.get('/avatares',avataresController.getAvatares)
 
 router.get('/escolas',escolasController.getEscolas)
