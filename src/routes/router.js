@@ -1,6 +1,11 @@
 import { Router } from 'express'
 import jwt from 'jsonwebtoken'
 
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import Usuario from '../models/Usuario.js';
+import transporter from '../utils/email.js';
+
 import { authenticate } from '../services/authService.js'
 import usuariosController from '../controllers/usuariosController.js'
 import tiposController from '../controllers/tiposController.js'
@@ -81,3 +86,59 @@ function pegarUsuarioDoToken(req, res) {
         return res.status(401).json({ message: "Token inválido ou expirado", error: error.message });
     }
 }
+
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+  
+    try {
+      const usuario = await Usuario.findOne({ where: { email } });
+  
+      if (!usuario) {
+        return res.status(404).json({ message: 'Usuário não encontrado.' });
+      }
+  
+      // Cria um token de recuperação de senha
+      const token = jwt.sign({ userId: usuario.id },  process.env.SECRET_KEY, { expiresIn: '1h' });
+  
+      // Envia o link de recuperação de senha para o e-mail
+      const resetLink = `http://localhost:5173/redefinir-senha/${token}`;
+      const mailOptions = {
+        from: 'equipeplay2learn@gmail.com',
+        to: usuario.email,
+        subject: 'Recuperação de Senha',
+        text: `Clique no link para redefinir sua senha: ${resetLink}`,
+      };
+  
+      await transporter.sendMail(mailOptions);
+  
+      res.status(200).json({ message: 'Link de recuperação de senha enviado para seu e-mail.' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao enviar e-mail.' });
+    }
+  });
+  
+  router.post('/reset-password/:token', async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+  
+    try {
+      // Verifica o token
+      const decoded = jwt.verify(token, process.env.SECRET_KEY); // Use SECRET_KEY no lugar de 'seu-segredo'
+      const usuario = await Usuario.findByPk(decoded.userId);
+  
+      if (!usuario) {
+        return res.status(404).json({ message: 'Usuário não encontrado.' });
+      }
+  
+      // Criptografa a nova senha
+      usuario.senha = password;
+      await usuario.save();
+  
+      res.status(200).json({ message: 'Senha redefinida com sucesso.' });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: 'Token inválido ou expirado.' });
+    }
+  });
+  

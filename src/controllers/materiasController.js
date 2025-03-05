@@ -117,14 +117,11 @@ async function updateEloMateria(req, res) {
         return res.status(404).json({ error: 'eloMateriaUnic não encontrado' });
     }
 
-    console.log(elo_id, subelo_id, respostas_corretas_elo, respostas_corretas_total);
-
     if (respostas_corretas_elo >= 30) {
         respostas_corretas_elo = 0;
+        elo_id = elo_id + 1
         subelo_id = 1
     }
-
-    console.log(elo_id, subelo_id, respostas_corretas_elo, respostas_corretas_total);
 
     if (elo_id !== undefined) eloMateriaUnic.elo_id = elo_id;
     if (subelo_id !== undefined) eloMateriaUnic.subelo_id = subelo_id;
@@ -136,8 +133,6 @@ async function updateEloMateria(req, res) {
     } catch (error) {
         return res.status(400).json({ error: 'Informações de eloMateriaUnic inválidas: ' + error.message });
     }
-
-    console.log(eloMateriaUnic);
 
     try {
         await eloMateriaUnic.save();
