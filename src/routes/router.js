@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import Usuario from '../models/Usuario.js';
-import transporter from '../utils/email.js';
+import transporter from '../services/email.js';
 
 import { authenticate } from '../services/authService.js'
 import usuariosController from '../controllers/usuariosController.js'
@@ -14,6 +14,7 @@ import loginController from '../controllers/loginController.js'
 import estatisticasController from '../controllers/estatisticasController.js'
 import avataresController from '../controllers/avataresController.js'
 import escolasController from '../controllers/escolasController.js'
+import nivelController from '../controllers/nivelController.js';
 
 const router = Router()
 
@@ -24,6 +25,9 @@ router.put('/usuarios/:id', usuariosController.updateUser)
 router.delete('/usuarios/:id',usuariosController.deleteUser)
 router.get('/estatisticas/:id',estatisticasController.getEstatisticasByUser)
 router.put('/estatisticas/:id',estatisticasController.updateEstatisticasByUser)
+
+router.put('/usuarios/:id/atualizaexperiencia', nivelController.adicionarXp)
+
 
 router.post('/tipos',tiposController.createType)
 router.get('/tipos',tiposController.getTypes)
@@ -39,6 +43,7 @@ router.delete('/materias/:id',materiasController.deleteMateria)
 router.get('/eloMaterias/:id',materiasController.getEloMateriasByUser)
 router.get('/eloMaterias/:id/materia/:nmMateria',materiasController.getEloMateriasByUserAndMateria)
 router.put('/eloMaterias/:id/materia/:nmMateria', materiasController.updateEloMateria)
+
 
 router.get('/materias/:nmMateria/perguntas',materiasController.getPerguntasMateria)
 router.get('/materias/perguntas/:id/alternativas',materiasController.getAternativasPerguntaMateria)
@@ -123,8 +128,8 @@ router.post('/forgot-password', async (req, res) => {
     const { password } = req.body;
   
     try {
-      // Verifica o token
-      const decoded = jwt.verify(token, process.env.SECRET_KEY); // Use SECRET_KEY no lugar de 'seu-segredo'
+
+      const decoded = jwt.verify(token, process.env.SECRET_KEY); 
       const usuario = await Usuario.findByPk(decoded.userId);
   
       if (!usuario) {

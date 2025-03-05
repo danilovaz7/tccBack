@@ -117,7 +117,7 @@ async function updateEloMateria(req, res) {
         return res.status(404).json({ error: 'eloMateriaUnic não encontrado' });
     }
 
-    if (respostas_corretas_elo >= 30) {
+    if (respostas_corretas_elo >= 30 && elo_id != 6) {
         respostas_corretas_elo = 0;
         elo_id = elo_id + 1
         subelo_id = 1
