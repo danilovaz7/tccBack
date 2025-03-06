@@ -434,6 +434,15 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: false,
       },
+      elo_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'elos',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+        allowNull: false,
+      },
       pergunta: {
         type: Sequelize.TEXT,
         allowNull: false,
@@ -593,7 +602,6 @@ module.exports = {
     await queryInterface.dropTable('perguntas');
     await queryInterface.dropTable('historico_partidas');
     await queryInterface.dropTable('elo_materias');
- 
     await queryInterface.dropTable('salas_jogadores');
     await queryInterface.dropTable('salas_materias');
     await queryInterface.dropTable('salas');

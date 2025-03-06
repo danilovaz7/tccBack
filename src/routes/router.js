@@ -45,7 +45,7 @@ router.get('/eloMaterias/:id/materia/:nmMateria',materiasController.getEloMateri
 router.put('/eloMaterias/:id/materia/:nmMateria', materiasController.updateEloMateria)
 
 
-router.get('/materias/:nmMateria/perguntas',materiasController.getPerguntasMateria)
+router.get('/materias/:nmMateria/perguntas/:eloid',materiasController.getPerguntasMateria)
 router.get('/materias/perguntas/:id/alternativas',materiasController.getAternativasPerguntaMateria)
 
 router.get('/avatares',avataresController.getAvatares)

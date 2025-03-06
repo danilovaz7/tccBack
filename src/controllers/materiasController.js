@@ -45,14 +45,23 @@ async function getMateriaById(req, res) {
 }
 
 async function getPerguntasMateria(req, res) {
-    const { nmMateria } = req.params
+    const { nmMateria, eloid } = req.params
+    console.log('ENTREI NO PEGA PERGUNTA')
+    console.log('eloid nao parseado',eloid + typeof(eloid))
+
+    let elo_id = parseInt(eloid)
+
+    console.log('eloid parseado',elo_id + typeof(elo_id))
 
     const materia = await Materia.findOne({where: {nome:nmMateria}})
 
-   let perguntasMateria = await Pergunta.findAll({
-            where: { materia_id: materia.id },
-            limit: 6
-        });
+    let perguntasMateria = await Pergunta.findAll({
+        where: {
+            materia_id: materia.id,
+            elo_id: elo_id
+        },
+        limit: 6
+    });
 
     if (perguntasMateria) {
         res.json(perguntasMateria)
