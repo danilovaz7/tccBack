@@ -41,9 +41,9 @@ router.get('/materias/:id',materiasController.getMateriaById)
 router.put('/materias/:id', materiasController.updateMateria)
 router.delete('/materias/:id',materiasController.deleteMateria)
 router.get('/eloMaterias/:id',materiasController.getEloMateriasByUser)
+router.get('/eloMaterias/materias/:materia_id',materiasController.getEloMaterias)
 router.get('/eloMaterias/:id/materia/:nmMateria',materiasController.getEloMateriasByUserAndMateria)
 router.put('/eloMaterias/:id/materia/:nmMateria', materiasController.updateEloMateria)
-
 
 router.get('/materias/:nmMateria/perguntas/:eloid',materiasController.getPerguntasMateria)
 router.get('/materias/perguntas/:id/alternativas',materiasController.getAternativasPerguntaMateria)

@@ -2,16 +2,29 @@ import Usuario from "../models/Usuario.js"
 import EloMateria from "../models/EloMateria.js"
 import Materia from "../models/Materia.js"
 import EstatisticaGeral from "../models/EstatisticaGeral.js";
-import Avatar from "../models/Avatar.js";
+
+import generator from "generate-password";
+
+export function generateRandomPassword() {
+    return generator.generate({
+        length: 8,
+        numbers: true,
+        uppercase: true,
+        lowercase: true,
+        symbols: false
+    });
+}
 
 async function createUser(req, res) {
-    const { nome, email, senha,matricula, experiencia, nivel,id_avatar, tipo_usuario_id, id_escola,id_turma,genero } = req.body;
-    const usuario = Usuario.build({ nome, email, senha, matricula, experiencia,id_turma,id_avatar, id_escola, nivel, tipo_usuario_id,genero });
+    const { nome, email, matricula, experiencia, nivel, id_avatar, tipo_usuario_id, id_escola, id_turma, genero } = req.body;
+    const senha = generateRandomPassword();
+
+    const usuario = Usuario.build({ nome, email, senha, matricula, experiencia, id_turma, id_avatar, id_escola, nivel, tipo_usuario_id, genero });
 
     try {
         await usuario.validate();
     } catch (error) {
-        return res.status(400).json({ error: 'Informações de usuário inválidas: ' + error.message }); 
+        return res.status(400).json({ error: 'Informações de usuário inválidas: ' + error.message });
     }
 
     try {
@@ -20,12 +33,12 @@ async function createUser(req, res) {
         return res.status(500).json({ error: 'Erro ao criar usuário: ' + error.message });
     }
 
-    const estatisticasUsuario = EstatisticaGeral.build({usuario_id: usuario.id, total_perguntas: 0, total_perguntas_acertadas: 0, total_disputas: 0, total_disputas_ganhas: 0 }) 
+    const estatisticasUsuario = EstatisticaGeral.build({ usuario_id: usuario.id, total_perguntas: 0, total_perguntas_acertadas: 0, total_disputas: 0, total_disputas_ganhas: 0 })
 
     try {
         await estatisticasUsuario.validate();
     } catch (error) {
-        return res.status(400).json({ error: 'Estatistiacs de usuário inválidas: ' + error.message }); 
+        return res.status(400).json({ error: 'Estatistiacs de usuário inválidas: ' + error.message });
     }
 
     try {
@@ -33,14 +46,14 @@ async function createUser(req, res) {
     } catch (error) {
         return res.status(500).json({ error: 'Erro ao criar estatisticasUsuario de usuário: ' + error.message });
     }
-    
+
     try {
         const materias = await Materia.findAll();
         const userId = usuario.id;
 
         await Promise.all(materias.map(async (materia) => {
             const materiaId = materia.id;
-            const materiaElo = EloMateria.build({ usuario_id:userId, materia_id:materiaId, elo_id: 1, subelo_id: 1,  respostas_corretas_elo: 0,respostas_corretas_total: 0 });
+            const materiaElo = EloMateria.build({ usuario_id: userId, materia_id: materiaId, elo_id: 1, subelo_id: 1, respostas_corretas_elo: 0, respostas_corretas_total: 0 });
 
             try {
                 await materiaElo.validate();
@@ -64,31 +77,47 @@ async function createUser(req, res) {
 
 async function getUsers(req, res) {
     const limit = req.query.limit ? parseInt(req.query.limit) : null;
+    const orderField = req.query.order ? req.query.order : null;
+    let orderDirection = req.query.orderDirection ? req.query.orderDirection : null
+    const id_turma = req.query.id_turma ? parseInt(req.query.id_turma) : null;
+
+    if (orderField === 'nome') {
+        orderDirection = 'ASC'
+    }
 
     const queryOptions = {
         where: { tipo_usuario_id: 2 },
-        order: [['nivel', 'DESC']],
         include: ['avatar', 'estatisticas_gerais'],
     };
-    
+
+    if (id_turma) {
+        queryOptions.where.id_turma = id_turma;
+    }
     if (limit !== null) {
         queryOptions.limit = limit;
     }
+    if (orderField) {
+        queryOptions.order = [[orderField, orderDirection]];
+    }
 
-    const usuarios = await Usuario.findAll(queryOptions);
-
-    if (usuarios) {
-        res.json(usuarios);
-    } else {
-        res.status(500).json({ error: 'Erro ao buscar usuários' });
+    try {
+        const usuarios = await Usuario.findAll(queryOptions);
+        if (usuarios) {
+            res.json(usuarios);
+        } else {
+            res.status(500).json({ error: 'Erro ao buscar usuários' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar usuários', message: error.message });
     }
 }
+
 
 
 async function getUserById(req, res) {
     const { id } = req.params
 
-    const usuario = await Usuario.findByPk(id, { include: ['tipo_usuario','avatar'] })
+    const usuario = await Usuario.findByPk(id, { include: ['tipo_usuario', 'avatar'] })
 
     if (usuario) {
         res.json(usuario.toJSON())
@@ -99,7 +128,7 @@ async function getUserById(req, res) {
 
 async function updateUser(req, res) {
     const { id } = req.params
-    const { nome, email, senha, id_avatar,matricula, experiencia, nivel, tipo_usuario_id } = req.body
+    const { nome, email, senha, id_avatar, matricula, experiencia, nivel, tipo_usuario_id } = req.body
 
     const usuario = await Usuario.findByPk(id)
 

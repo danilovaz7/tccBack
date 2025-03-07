@@ -44,16 +44,32 @@ async function getMateriaById(req, res) {
     }
 }
 
+async function getEloMaterias(req, res) {
+    const { materia_id } = req.params
+
+    const eloMaterias = await EloMateria.findAll({
+        where: {materia_id:materia_id},
+        include: ['elo', 'materia'], 
+    })
+
+    console.log('eloMaterias', eloMaterias)
+
+    if (eloMaterias) {
+        res.json(eloMaterias)
+    } else {
+        res.status(500).json({ error: 'Erro ao buscar materia' })
+    }
+}
+
 async function getPerguntasMateria(req, res) {
     const { nmMateria, eloid } = req.params
-    console.log('ENTREI NO PEGA PERGUNTA')
-    console.log('eloid nao parseado',eloid + typeof(eloid))
 
     let elo_id = parseInt(eloid)
 
-    console.log('eloid parseado',elo_id + typeof(elo_id))
-
-    const materia = await Materia.findOne({where: {nome:nmMateria}})
+    const materia = await Materia.findOne({
+        where: {nome:nmMateria},
+        include: ['elo', 'materia'],
+    })
 
     let perguntasMateria = await Pergunta.findAll({
         where: {
@@ -202,6 +218,7 @@ export default {
     getMateriaById,
     updateMateria,
     deleteMateria,
+    getEloMaterias,
     getEloMateriasByUser,
     getPerguntasMateria,
     getAternativasPerguntaMateria,
