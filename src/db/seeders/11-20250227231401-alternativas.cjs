@@ -293,7 +293,6 @@ module.exports = {
       { pergunta_id: 72, alternativa: 'Não influencia a interpretação', correta: false, createdAt: new Date(), updatedAt: new Date() },
       { pergunta_id: 72, alternativa: 'Determina apenas o gênero textual', correta: false, createdAt: new Date(), updatedAt: new Date() },
       { pergunta_id: 72, alternativa: 'Apenas afeta a estrutura do texto', correta: false, createdAt: new Date(), updatedAt: new Date() },
-
       { pergunta_id: 73, alternativa: 'A unidade básica da vida', correta: true, createdAt: new Date(), updatedAt: new Date() },
       { pergunta_id: 73, alternativa: 'Um tipo de tecido', correta: false, createdAt: new Date(), updatedAt: new Date() },
       { pergunta_id: 73, alternativa: 'Uma organela celular', correta: false, createdAt: new Date(), updatedAt: new Date() },
