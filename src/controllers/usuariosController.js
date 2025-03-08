@@ -2,6 +2,7 @@ import Usuario from "../models/Usuario.js"
 import EloMateria from "../models/EloMateria.js"
 import Materia from "../models/Materia.js"
 import EstatisticaGeral from "../models/EstatisticaGeral.js";
+import { Sequelize } from 'sequelize';
 
 import generator from "generate-password";
 
@@ -74,44 +75,61 @@ async function createUser(req, res) {
     }
 }
 
-
 async function getUsers(req, res) {
     const limit = req.query.limit ? parseInt(req.query.limit) : null;
     const orderField = req.query.order ? req.query.order : null;
-    let orderDirection = req.query.orderDirection ? req.query.orderDirection : null
+    let orderDirection = req.query.orderDirection ? req.query.orderDirection : 'DESC';
     const id_turma = req.query.id_turma ? parseInt(req.query.id_turma) : null;
-
+    const materia_id = req.query.materiaId ? parseInt(req.query.materiaId) : null; 
+  
     if (orderField === 'nome') {
-        orderDirection = 'ASC'
+      orderDirection = 'ASC';
     }
-
+  
     const queryOptions = {
-        where: { tipo_usuario_id: 2 },
-        include: ['avatar', 'estatisticas_gerais'],
+      where: { tipo_usuario_id: 2 },
+      include: [
+        'avatar',
+        'estatisticas_gerais',
+        {
+          model: EloMateria,
+          as: 'elos',
+          include: ['elo'],
+          required: false, 
+          where: materia_id ? { materia_id: materia_id } : undefined,
+        }
+      ],
     };
-
+  
     if (id_turma) {
-        queryOptions.where.id_turma = id_turma;
+      queryOptions.where.id_turma = id_turma;
     }
     if (limit !== null) {
-        queryOptions.limit = limit;
+      queryOptions.limit = limit;
     }
-    if (orderField) {
-        queryOptions.order = [[orderField, orderDirection]];
-    }
-
-    try {
-        const usuarios = await Usuario.findAll(queryOptions);
-        if (usuarios) {
-            res.json(usuarios);
+  
+    if (orderField === 'elo') {
+        if (!materia_id) {
+          return res.status(400).json({
+            error: "Para ordenar por elo, o parâmetro materia_id deve ser fornecido."
+          });
         } else {
-            res.status(500).json({ error: 'Erro ao buscar usuários' });
+          queryOptions.order = [
+            [Sequelize.col('elos.elo_id'), orderDirection],
+            [Sequelize.col('elos.subelo_id'), 'DESC'] // critério de desempate: maior subelo_id primeiro
+          ];
         }
+      } else {
+        queryOptions.order = [[orderField, orderDirection]];
+      }
+  
+    try {
+      const usuarios = await Usuario.findAll(queryOptions);
+      res.json(Array.isArray(usuarios) ? usuarios : []);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar usuários', message: error.message });
+      res.status(500).json({ error: 'Erro ao buscar usuários', message: error.message });
     }
-}
-
+  }
 
 
 async function getUserById(req, res) {
