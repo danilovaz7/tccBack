@@ -9,19 +9,19 @@ import Pergunta from './Pergunta.js';
 import Alternativa from './Alternativa.js';
 import RespostaQuiz from './RespostaQuiz.js';
 import EstatisticaGeral from './EstatisticaGeral.js';
-import Turmas from './Turmas.js';
-import Escolas from './Escolas.js';
+import Turma from './Turma.js';
+import Escola from './Escola.js';
 import Avatar from './Avatar.js';
 
 // Associações relacionadas a TipoUsuario
 TipoUsuario.hasMany(Usuario, { foreignKey: 'tipo_usuario_id', as: 'usuarios' });
 Usuario.belongsTo(TipoUsuario, { foreignKey: 'tipo_usuario_id', as: 'tipo_usuario' });
 
-Turmas.hasMany(Usuario, { foreignKey: 'id_turma', as: 'usuarios' });
-Usuario.belongsTo(Turmas, { foreignKey: 'id_turma', as: 'turma' });
+Turma.hasMany(Usuario, { foreignKey: 'id_turma', as: 'usuarios' });
+Usuario.belongsTo(Turma, { foreignKey: 'id_turma', as: 'turma' });
 
-Escolas.hasMany(Usuario, { foreignKey: 'id_escola', as: 'usuarios' });
-Usuario.belongsTo(Escolas, { foreignKey: 'id_escola', as: 'escola' });
+Escola.hasMany(Usuario, { foreignKey: 'id_escola', as: 'usuarios' });
+Usuario.belongsTo(Escola, { foreignKey: 'id_escola', as: 'escola' });
 
 Avatar.hasMany(Usuario, { foreignKey: 'id_avatar', as: 'usuarios' });
 Usuario.belongsTo(Avatar, { foreignKey: 'id_avatar', as: 'avatar' });

@@ -1,5 +1,5 @@
 
-import Escolas from "../models/Escolas.js"
+import Escolas from "../models/Escola.js"
 
 async function getEscolas(req, res) {
     const escolas = await Escolas.findAll({})

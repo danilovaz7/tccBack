@@ -15,6 +15,7 @@ import estatisticasController from '../controllers/estatisticasController.js'
 import avataresController from '../controllers/avataresController.js'
 import escolasController from '../controllers/escolasController.js'
 import nivelController from '../controllers/nivelController.js';
+import turmasController from '../controllers/turmasController.js';
 
 const router = Router()
 
@@ -27,7 +28,6 @@ router.get('/estatisticas/:id',estatisticasController.getEstatisticasByUser)
 router.put('/estatisticas/:id',estatisticasController.updateEstatisticasByUser)
 
 router.put('/usuarios/:id/atualizaexperiencia', nivelController.adicionarXp)
-
 
 router.post('/tipos',tiposController.createType)
 router.get('/tipos',tiposController.getTypes)
@@ -51,6 +51,9 @@ router.get('/materias/perguntas/:id/alternativas',materiasController.getAternati
 router.get('/avatares',avataresController.getAvatares)
 
 router.get('/escolas',escolasController.getEscolas)
+
+router.get('/turmas',turmasController.getTurmas)
+
 
 router.post('/login',loginController.login)
 router.get('/eu', pegarUsuarioDoToken)

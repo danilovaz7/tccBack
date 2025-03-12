@@ -81,6 +81,7 @@ async function getUsers(req, res) {
     let orderDirection = req.query.orderDirection ? req.query.orderDirection : 'DESC';
     const id_turma = req.query.id_turma ? parseInt(req.query.id_turma) : null;
     const materia_id = req.query.materiaId ? parseInt(req.query.materiaId) : null; 
+    const id_escola = req.query.id_escola ? parseInt(req.query.id_escola) : null;
   
     if (orderField === 'nome') {
       orderDirection = 'ASC';
@@ -104,6 +105,9 @@ async function getUsers(req, res) {
     if (id_turma) {
       queryOptions.where.id_turma = id_turma;
     }
+    if (id_escola) {
+        queryOptions.where.id_escola = id_escola;
+      }
     if (limit !== null) {
       queryOptions.limit = limit;
     }
@@ -116,7 +120,7 @@ async function getUsers(req, res) {
         } else {
           queryOptions.order = [
             [Sequelize.col('elos.elo_id'), orderDirection],
-            [Sequelize.col('elos.subelo_id'), 'DESC'] // critério de desempate: maior subelo_id primeiro
+            [Sequelize.col('elos.subelo_id'), 'DESC']
           ];
         }
       } else {
