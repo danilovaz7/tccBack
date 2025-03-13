@@ -68,7 +68,6 @@ async function getPerguntasMateria(req, res) {
 
     const materia = await Materia.findOne({
         where: {nome:nmMateria},
-        include: ['elo', 'materia'],
     })
 
     let perguntasMateria = await Pergunta.findAll({
