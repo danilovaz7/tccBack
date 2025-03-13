@@ -40,6 +40,11 @@ const Usuario = database.define('usuarios', {
     allowNull: false,
     defaultValue: 0,
   },
+  ic_ativo: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: 1,
+  }
 }, {
   timestamps: true, // Inclui createdAt e updatedAt
 });

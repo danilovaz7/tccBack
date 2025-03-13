@@ -173,6 +173,11 @@ module.exports = {
         },
         onUpdate: 'CASCADE'
       },
+      ic_ativo: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: 1,
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

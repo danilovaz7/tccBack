@@ -15,7 +15,8 @@ module.exports = {
         id_turma: 3,
         nivel: 99,
         experiencia: 999999,
-        matricula:'999999' ,
+        matricula:'999999',
+        ic_ativo: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -31,6 +32,7 @@ module.exports = {
         nivel: 1,
         experiencia:0 ,
         matricula:'129082' ,
+        ic_ativo: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -46,6 +48,7 @@ module.exports = {
         nivel: 1,
         experiencia:0 ,
         matricula:'325478' ,
+        ic_ativo: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -61,6 +64,7 @@ module.exports = {
         nivel: 1,
         experiencia:0 ,
         matricula:'783411' ,
+        ic_ativo: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       }

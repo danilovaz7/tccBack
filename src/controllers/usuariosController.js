@@ -150,7 +150,7 @@ async function getUserById(req, res) {
 
 async function updateUser(req, res) {
     const { id } = req.params
-    const { nome, email, senha, id_avatar, matricula, experiencia, nivel, tipo_usuario_id } = req.body
+    const { nome, email, senha, id_avatar, matricula, experiencia, nivel, tipo_usuario_id , ic_ativo} = req.body
 
     const usuario = await Usuario.findByPk(id)
 
@@ -166,6 +166,7 @@ async function updateUser(req, res) {
     if (nivel) usuario.nivel = nivel
     if (tipo_usuario_id) usuario.tipo_usuario_id = tipo_usuario_id
     if (id_avatar) usuario.id_avatar = id_avatar
+    if (ic_ativo) usuario.ic_ativo = ic_ativo
 
     try {
         await usuario.validate()
