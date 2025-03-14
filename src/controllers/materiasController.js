@@ -88,31 +88,33 @@ async function getPerguntasQuizMateria(req, res) {
 }
 
 async function getPerguntasAllMateria(req, res) {
-    const id_turma = req.query.id_turma ? parseInt(req.query.id_turma) : null;
-    const materia_id = req.query.materia_id ? parseInt(req.query.materia_id) : null; 
-
-    console.log('entrei no get all')
-    console.log(id_turma)
-    console.log(materia_id)
+    const id_turma = req.params.id_turma ? parseInt(req.params.id_turma) : null;
+    const materia_id = req.params.materia_id ? parseInt(req.params.materia_id) : null;
 
     const materia = await Materia.findOne({
-        where: {id:materia_id},
-    })
-    console.log(materia)
+        where: { id: materia_id },
+       
+    });
+   
+    if (!materia) {
+        return res.status(404).json({ error: 'Matéria não encontrada' });
+    }
 
     let perguntasAllMateria = await Pergunta.findAll({
         where: {
             materia_id: materia.id,
             turma_id: id_turma
         },
+        include: ['alternativas'], 
     });
 
     if (perguntasAllMateria) {
-        res.json(perguntasAllMateria)
+        res.json(perguntasAllMateria);
     } else {
-        res.status(404).json({ error: 'perguntasMateria não encontrado' })
+        res.status(404).json({ error: 'Perguntas não encontradas' });
     }
 }
+
 
 async function getAternativasPerguntaMateria(req, res) {
     const { id } = req.params
