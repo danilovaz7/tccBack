@@ -45,7 +45,9 @@ router.get('/eloMaterias/materias/:materia_id',materiasController.getEloMaterias
 router.get('/eloMaterias/:id/materia/:nmMateria',materiasController.getEloMateriasByUserAndMateria)
 router.put('/eloMaterias/:id/materia/:nmMateria', materiasController.updateEloMateria)
 
-router.get('/materias/:nmMateria/perguntas/:eloid',materiasController.getPerguntasMateria)
+router.get('/materias/:materia_id/perguntas/turma/:id_turma', materiasController.getPerguntasAllMateria);
+
+router.get('/materias/:nmMateria/perguntas/:eloid/:turmaId', materiasController.getPerguntasQuizMateria);
 router.get('/materias/perguntas/:id/alternativas',materiasController.getAternativasPerguntaMateria)
 
 router.get('/avatares',avataresController.getAvatares)
@@ -53,7 +55,6 @@ router.get('/avatares',avataresController.getAvatares)
 router.get('/escolas',escolasController.getEscolas)
 
 router.get('/turmas',turmasController.getTurmas)
-
 
 router.post('/login',loginController.login)
 router.get('/eu', pegarUsuarioDoToken)

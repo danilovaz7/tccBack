@@ -448,6 +448,15 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: false,
       },
+      turma_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'turmas',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+        allowNull: false,
+      },
       pergunta: {
         type: Sequelize.TEXT,
         allowNull: false,

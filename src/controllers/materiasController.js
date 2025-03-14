@@ -61,10 +61,11 @@ async function getEloMaterias(req, res) {
     }
 }
 
-async function getPerguntasMateria(req, res) {
-    const { nmMateria, eloid } = req.params
-
+async function getPerguntasQuizMateria(req, res) {
+    const { nmMateria, eloid,turmaId } = req.params
+    console.log('deu bo aqui')
     let elo_id = parseInt(eloid)
+    let turmaid = parseInt(turmaId)
 
     const materia = await Materia.findOne({
         where: {nome:nmMateria},
@@ -73,13 +74,41 @@ async function getPerguntasMateria(req, res) {
     let perguntasMateria = await Pergunta.findAll({
         where: {
             materia_id: materia.id,
-            elo_id: elo_id
+            elo_id: elo_id,
+            turma_id: turmaid
         },
         limit: 6
     });
 
     if (perguntasMateria) {
         res.json(perguntasMateria)
+    } else {
+        res.status(404).json({ error: 'perguntasMateria não encontrado' })
+    }
+}
+
+async function getPerguntasAllMateria(req, res) {
+    const id_turma = req.query.id_turma ? parseInt(req.query.id_turma) : null;
+    const materia_id = req.query.materia_id ? parseInt(req.query.materia_id) : null; 
+
+    console.log('entrei no get all')
+    console.log(id_turma)
+    console.log(materia_id)
+
+    const materia = await Materia.findOne({
+        where: {id:materia_id},
+    })
+    console.log(materia)
+
+    let perguntasAllMateria = await Pergunta.findAll({
+        where: {
+            materia_id: materia.id,
+            turma_id: id_turma
+        },
+    });
+
+    if (perguntasAllMateria) {
+        res.json(perguntasAllMateria)
     } else {
         res.status(404).json({ error: 'perguntasMateria não encontrado' })
     }
@@ -219,8 +248,9 @@ export default {
     deleteMateria,
     getEloMaterias,
     getEloMateriasByUser,
-    getPerguntasMateria,
+    getPerguntasQuizMateria,
     getAternativasPerguntaMateria,
     getEloMateriasByUserAndMateria,
-    updateEloMateria
+    updateEloMateria,
+    getPerguntasAllMateria
 }

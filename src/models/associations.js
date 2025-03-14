@@ -68,6 +68,9 @@ HistoricoPartida.belongsTo(Usuario, { foreignKey: 'vencedor_id', as: 'vencedor' 
 Materia.hasMany(Pergunta, { foreignKey: 'materia_id', as: 'perguntas' });
 Pergunta.belongsTo(Materia, { foreignKey: 'materia_id', as: 'materia' });
 
+Turma.hasMany(Pergunta, { foreignKey: 'turma_id', as: 'perguntas' });
+Pergunta.belongsTo(Turma, { foreignKey: 'turma_id', as: 'turma' });
+
 // Associações relacionadas a Elos e Perguntas
 Elo.hasMany(Pergunta, { foreignKey: 'elo_id', as: 'perguntas' });
 Pergunta.belongsTo(Elo, { foreignKey: 'elo_id', as: 'elo' });
@@ -75,6 +78,8 @@ Pergunta.belongsTo(Elo, { foreignKey: 'elo_id', as: 'elo' });
 // Associações relacionadas a Perguntas e Alternativas
 Pergunta.hasMany(Alternativa, { foreignKey: 'pergunta_id', as: 'alternativas' });
 Alternativa.belongsTo(Pergunta, { foreignKey: 'pergunta_id', as: 'pergunta' });
+
+
 
 // Associações relacionadas a Usuarios, Perguntas, Alternativas e RespostaQuiz
 Usuario.hasMany(RespostaQuiz, { foreignKey: 'usuario_id', as: 'respostas_quiz' });

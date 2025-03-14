@@ -18,6 +18,15 @@ const Pergunta = database.define('perguntas', {
     },
     onDelete: 'CASCADE',
   },
+  turma_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'turmas',
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+  },
   elo_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
