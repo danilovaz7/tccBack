@@ -17,11 +17,11 @@ export function generateRandomPassword() {
 }
 
 async function createUser(req, res) {
-    const { nome, email, matricula, experiencia, nivel, id_avatar, tipo_usuario_id, id_escola, id_turma, genero } = req.body;
+    const { nome, email, matricula, experiencia, nivel, id_avatar, tipo_usuario_id, id_materia,id_escola, id_turma, genero } = req.body;
     const senha = generateRandomPassword();
 
-    const usuario = Usuario.build({ nome, email, senha, matricula, experiencia, id_turma, id_avatar, id_escola, nivel, tipo_usuario_id, genero });
-
+    const usuario = Usuario.build({ nome, email, senha, matricula, id_materia,experiencia, id_turma, id_avatar, id_escola, nivel, tipo_usuario_id, genero });
+    console.log(usuario)
     try {
         await usuario.validate();
     } catch (error) {

@@ -36,6 +36,15 @@ const Pergunta = database.define('perguntas', {
     },
     onDelete: 'CASCADE',
   },
+  escola_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'escolas',
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+  },
   pergunta: {
     type: DataTypes.TEXT,
     allowNull: false,

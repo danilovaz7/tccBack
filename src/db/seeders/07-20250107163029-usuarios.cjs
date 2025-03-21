@@ -47,6 +47,7 @@ module.exports = {
         id_turma: 3,
         nivel: 1,
         experiencia:0 ,
+        id_materia: 2,
         matricula:'325478' ,
         ic_ativo: 1,
         createdAt: new Date(),

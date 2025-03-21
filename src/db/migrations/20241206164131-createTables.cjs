@@ -100,6 +100,34 @@ module.exports = {
       },
     });
 
+    // Tabela de matérias
+    await queryInterface.createTable('materias', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+      },
+      nome: {
+        type: Sequelize.STRING(255),
+        allowNull: false,
+      },
+      icone: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+
     // Tabela de usuários
     await queryInterface.createTable('usuarios', {
       id: {
@@ -173,6 +201,15 @@ module.exports = {
         },
         onUpdate: 'CASCADE'
       },
+      id_materia: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'materias',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE'
+      },
       ic_ativo: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
@@ -187,34 +224,6 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-      },
-    });
-
-    // Tabela de matérias
-    await queryInterface.createTable('materias', {
-      id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        allowNull: false,
-      },
-      nome: {
-        type: Sequelize.STRING(255),
-        allowNull: false,
-      },
-      icone: {
-        type: Sequelize.TEXT,
-        allowNull: false
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
       },
     });
 
@@ -452,6 +461,15 @@ module.exports = {
         type: Sequelize.INTEGER,
         references: {
           model: 'turmas',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+        allowNull: false,
+      },
+      escola_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'escolas',
           key: 'id',
         },
         onDelete: 'CASCADE',

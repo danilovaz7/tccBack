@@ -17,6 +17,9 @@ import Avatar from './Avatar.js';
 TipoUsuario.hasMany(Usuario, { foreignKey: 'tipo_usuario_id', as: 'usuarios' });
 Usuario.belongsTo(TipoUsuario, { foreignKey: 'tipo_usuario_id', as: 'tipo_usuario' });
 
+Materia.hasMany(Usuario, { foreignKey: 'id_materia', as: 'usuarios' });
+Usuario.belongsTo(Materia, { foreignKey: 'id_materia', as: 'materia' });
+
 Turma.hasMany(Usuario, { foreignKey: 'id_turma', as: 'usuarios' });
 Usuario.belongsTo(Turma, { foreignKey: 'id_turma', as: 'turma' });
 
@@ -78,8 +81,6 @@ Pergunta.belongsTo(Elo, { foreignKey: 'elo_id', as: 'elo' });
 // Associações relacionadas a Perguntas e Alternativas
 Pergunta.hasMany(Alternativa, { foreignKey: 'pergunta_id', as: 'alternativas' });
 Alternativa.belongsTo(Pergunta, { foreignKey: 'pergunta_id', as: 'pergunta' });
-
-
 
 // Associações relacionadas a Usuarios, Perguntas, Alternativas e RespostaQuiz
 Usuario.hasMany(RespostaQuiz, { foreignKey: 'usuario_id', as: 'respostas_quiz' });
