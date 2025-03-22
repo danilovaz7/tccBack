@@ -2,7 +2,7 @@
 import database from '../db/database.js';
 import { DataTypes } from 'sequelize';
 
-const Escolas = database.define('escolas', {
+const Escola = database.define('escolas', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -18,4 +18,4 @@ const Escolas = database.define('escolas', {
   timestamps: true,
 });
 
-export default Escolas;
+export default Escola;

@@ -61,6 +61,60 @@ async function getEloMaterias(req, res) {
     }
 }
 
+async function createPergunta(req, res) {
+    const { materia_id, elo_id, turma_id, escola_id, pergunta, alternativas, alternativaCorreta } = req.body;
+
+    console.log('Entre no create pergunta');
+
+    const perguntaNova = Pergunta.build({ materia_id, elo_id, turma_id, escola_id, pergunta });
+
+    console.log('PerguntaNova', perguntaNova);
+
+    
+    try {
+        await perguntaNova.validate();
+    } catch (error) {
+        return res.status(400).json({ error: 'Informações de pergunta inválidas: ' + error.message });
+    }
+
+ 
+    try {
+        await perguntaNova.save();
+    } catch (error) {
+        return res.status(500).json({ error: 'Erro ao criar pergunta: ' + error.message });
+    }
+
+    const alternativasCriadas = [];
+
+   
+    for (let i = 0; i < 4; i++) {
+        let alternativaNova;
+
+        
+        if (i === alternativaCorreta) {
+            alternativaNova = Alternativa.build({ pergunta_id: perguntaNova.id, alternativa: alternativas[i], correta: true });
+        } else {
+            alternativaNova = Alternativa.build({ pergunta_id: perguntaNova.id, alternativa: alternativas[i], correta: false });
+        }
+
+      
+        try {
+            await alternativaNova.validate();
+            await alternativaNova.save();
+            alternativasCriadas.push(alternativaNova.toJSON());
+        } catch (error) {
+            return res.status(400).json({ error: `Erro ao salvar alternativa ${i + 1}: ` + error.message });
+        }
+    }
+
+
+    return res.status(201).json({
+        pergunta: perguntaNova.toJSON(),
+        alternativas: alternativasCriadas
+    });
+}
+
+
 async function getPerguntasQuizMateria(req, res) {
     const { nmMateria, eloid,turmaId } = req.params
     console.log('deu bo aqui')
@@ -90,10 +144,11 @@ async function getPerguntasQuizMateria(req, res) {
 async function getPerguntasAllMateria(req, res) {
     const id_turma = req.params.id_turma ? parseInt(req.params.id_turma) : null;
     const materia_id = req.params.materia_id ? parseInt(req.params.materia_id) : null;
+    const escola_id = req.params.escola_id ? parseInt(req.params.escola_id) : null;
 
     const materia = await Materia.findOne({
         where: { id: materia_id },
-       
+
     });
    
     if (!materia) {
@@ -103,9 +158,11 @@ async function getPerguntasAllMateria(req, res) {
     let perguntasAllMateria = await Pergunta.findAll({
         where: {
             materia_id: materia.id,
-            turma_id: id_turma
+            turma_id: id_turma,
+            escola_id: escola_id 
         },
         include: ['alternativas'], 
+        order: [['elo_id', 'ASC']], 
     });
 
     if (perguntasAllMateria) {
@@ -254,5 +311,6 @@ export default {
     getAternativasPerguntaMateria,
     getEloMateriasByUserAndMateria,
     updateEloMateria,
-    getPerguntasAllMateria
+    getPerguntasAllMateria,
+    createPergunta
 }

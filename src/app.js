@@ -12,10 +12,10 @@ const app = express();
 
 // Configuração do CORS
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',  // Permite o frontend do React, ajustado conforme variável de ambiente
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
-    credentials: true, // Permite o uso de cookies
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',  
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    allowedHeaders: ['Content-Type', 'Authorization'], 
+    credentials: true, 
 }));
 
 // Middlewares
