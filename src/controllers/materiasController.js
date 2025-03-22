@@ -2,6 +2,8 @@ import Materia from "../models/Materia.js"
 import EloMateria from "../models/EloMateria.js"
 import Alternativa from  "../models/Alternativa.js"
 import Pergunta from  "../models/Pergunta.js"
+import { Op } from "sequelize";
+
 
 async function createMateria(req, res) {
     const { nome,icone } = req.body
@@ -52,8 +54,6 @@ async function getEloMaterias(req, res) {
         include: ['elo', 'materia'], 
     })
 
-    console.log('eloMaterias', eloMaterias)
-
     if (eloMaterias) {
         res.json(eloMaterias)
     } else {
@@ -63,21 +63,14 @@ async function getEloMaterias(req, res) {
 
 async function createPergunta(req, res) {
     const { materia_id, elo_id, turma_id, escola_id, pergunta, alternativas, alternativaCorreta } = req.body;
-
-    console.log('Entre no create pergunta');
-
     const perguntaNova = Pergunta.build({ materia_id, elo_id, turma_id, escola_id, pergunta });
 
-    console.log('PerguntaNova', perguntaNova);
-
-    
     try {
         await perguntaNova.validate();
     } catch (error) {
         return res.status(400).json({ error: 'Informações de pergunta inválidas: ' + error.message });
     }
 
- 
     try {
         await perguntaNova.save();
     } catch (error) {
@@ -159,7 +152,10 @@ async function getPerguntasAllMateria(req, res) {
         where: {
             materia_id: materia.id,
             turma_id: id_turma,
-            escola_id: escola_id 
+            [Op.or]: [
+                { escola_id: escola_id },
+                { escola_id: 1 }
+            ]
         },
         include: ['alternativas'], 
         order: [['elo_id', 'ASC']], 
