@@ -27,6 +27,8 @@ router.delete('/usuarios/:id',usuariosController.deleteUser)
 router.get('/estatisticas/:id',estatisticasController.getEstatisticasByUser)
 router.put('/estatisticas/:id',estatisticasController.updateEstatisticasByUser)
 
+router.get('/cargos',usuariosController.getTipoUsuarios)
+
 router.put('/usuarios/:id/atualizaexperiencia', nivelController.adicionarXp)
 
 router.post('/tipos',tiposController.createType)

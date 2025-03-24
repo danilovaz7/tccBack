@@ -2,6 +2,7 @@ import Usuario from "../models/Usuario.js"
 import EloMateria from "../models/EloMateria.js"
 import Materia from "../models/Materia.js"
 import EstatisticaGeral from "../models/EstatisticaGeral.js";
+import TipoUsuario from "../models/TipoUsuario.js";
 import { Sequelize } from 'sequelize';
 
 import generator from "generate-password";
@@ -148,6 +149,16 @@ async function getUserById(req, res) {
     }
 }
 
+async function getTipoUsuarios(req, res) {
+    const tipoUsuarios = await TipoUsuario.findAll()
+
+    if (tipoUsuarios) {
+        res.json(tipoUsuarios)
+    } else {
+        res.status(500).json({ error: 'Erro ao buscar tipoUsuarios' })
+    }
+}
+
 async function updateUser(req, res) {
     const { id } = req.params
     const { nome, email, senha, id_avatar, matricula, experiencia, nivel, tipo_usuario_id , ic_ativo} = req.body
@@ -204,5 +215,6 @@ export default {
     getUsers,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    getTipoUsuarios
 }
