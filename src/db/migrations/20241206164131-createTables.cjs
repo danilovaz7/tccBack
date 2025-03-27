@@ -353,84 +353,7 @@ module.exports = {
         unique: true,
       }
     });
-    // Tabela de histórico de partidas
-    await queryInterface.createTable('historico_partidas', {
-      id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        allowNull: false,
-      },
-      usuario_id_1: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'usuarios',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-        allowNull: false,
-      },
-      usuario_id_2: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'usuarios',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-        allowNull: false,
-      },
-      materia_id_1: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'materias',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-        allowNull: false,
-      },
-      materia_id_2: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'materias',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-        allowNull: false,
-      },
-      materia_aleatoria_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'materias',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-        allowNull: false,
-      },
-      vencedor_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'usuarios',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-        allowNull: true,
-      },
-      data_partida: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-      },
-    });
-
+    
     // Tabela de perguntas
     await queryInterface.createTable('perguntas', {
       id: {
@@ -647,7 +570,7 @@ module.exports = {
           key: 'id',
         },
         onDelete: 'CASCADE',
-        allowNull: false,
+        allowNull: true,
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -710,7 +633,6 @@ module.exports = {
     await queryInterface.dropTable('respostas_quiz');
     await queryInterface.dropTable('alternativas');
     await queryInterface.dropTable('perguntas');
-    await queryInterface.dropTable('historico_partidas');
     await queryInterface.dropTable('elo_materias');
     await queryInterface.dropTable('subelos');
     await queryInterface.dropTable('elos');

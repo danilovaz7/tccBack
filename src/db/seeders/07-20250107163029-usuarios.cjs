@@ -85,8 +85,8 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        nome: 'Sakura Haruno',
-        email: 'sakura@gmail.com',
+        nome: 'Ana Clara',
+        email: 'ana@gmail.com',
         senha: '666',
         genero: 'F',
         id_avatar: 13,

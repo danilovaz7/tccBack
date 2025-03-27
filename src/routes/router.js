@@ -16,6 +16,7 @@ import avataresController from '../controllers/avataresController.js'
 import escolasController from '../controllers/escolasController.js'
 import nivelController from '../controllers/nivelController.js';
 import turmasController from '../controllers/turmasController.js';
+import salasController from '../controllers/salasController.js';
 
 const router = Router()
 
@@ -60,6 +61,13 @@ router.post('/criar-escola',escolasController.createEscola)
 router.get('/escolas',escolasController.getEscolas)
 
 router.get('/turmas',turmasController.getTurmas)
+
+
+router.post('/sala',salasController.createSala)
+router.get('/sala/:codigo',salasController.getSalaById)
+router.get('/sala-alunos/:id',salasController.getAlunoSala)
+router.post('/entrar/sala',salasController.entrarSala)
+
 
 router.post('/login',loginController.login)
 router.get('/eu', pegarUsuarioDoToken)

@@ -101,6 +101,7 @@ Sala.belongsTo(Usuario, { foreignKey: 'vencedor_id', as: 'vencedor' });
 Sala.hasMany(SalaAluno, { foreignKey: 'sala_id', as: 'alunosConectados' });
 SalaAluno.belongsTo(Sala, { foreignKey: 'sala_id', as: 'sala' });
 
+
 // Associação de um para muitos entre Usuario e SalaAluno
 Usuario.hasMany(SalaAluno, { foreignKey: 'usuario_id', as: 'salasParticipadas' });
 SalaAluno.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
