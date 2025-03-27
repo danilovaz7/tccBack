@@ -95,6 +95,460 @@ module.exports = {
         updatedAt: new Date()
       },
 
+      {
+        usuario_id: 3,
+        materia_id: 1,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 3,
+        materia_id: 2,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 3,
+        materia_id: 3,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 3,
+        materia_id: 4,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 3,
+        materia_id: 5,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 3,
+        materia_id: 6,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 3,
+        materia_id: 7,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 3,
+        materia_id: 8,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 3,
+        materia_id: 9,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      
+      {
+        usuario_id: 4,
+        materia_id: 1,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 4,
+        materia_id: 2,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 4,
+        materia_id: 3,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 4,
+        materia_id: 4,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 4,
+        materia_id: 5,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 4,
+        materia_id: 6,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 4,
+        materia_id: 7,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 4,
+        materia_id: 8,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 4,
+        materia_id: 9,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+
+      {
+        usuario_id: 5,
+        materia_id: 1,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 5,
+        materia_id: 2,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 5,
+        materia_id: 3,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 5,
+        materia_id: 4,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 5,
+        materia_id: 5,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 5,
+        materia_id: 6,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 5,
+        materia_id: 7,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 5,
+        materia_id: 8,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 5,
+        materia_id: 9,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+
+      {
+        usuario_id: 6,
+        materia_id: 1,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 6,
+        materia_id: 2,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 6,
+        materia_id: 3,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 6,
+        materia_id: 4,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 6,
+        materia_id: 5,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 6,
+        materia_id: 6,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 6,
+        materia_id: 7,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 6,
+        materia_id: 8,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 6,
+        materia_id: 9,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+
+      {
+        usuario_id: 7,
+        materia_id: 1,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 7,
+        materia_id: 2,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 7,
+        materia_id: 3,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 7,
+        materia_id: 4,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 7,
+        materia_id: 5,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 7,
+        materia_id: 6,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 7,
+        materia_id: 7,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 7,
+        materia_id: 8,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        usuario_id: 7,
+        materia_id: 9,
+        elo_id: 1,
+        subelo_id: 1,
+        respostas_corretas_elo: 0,
+        respostas_corretas_total: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
     ]);
   },
 

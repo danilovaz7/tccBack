@@ -1,5 +1,5 @@
-import Elo from './Elo.js'; // Modelo Elo
-import Subelo from './Subelo.js'; // Modelo Subelo
+import Elo from './Elo.js';
+import Subelo from './Subelo.js';
 import Usuario from './Usuario.js';
 import TipoUsuario from './TipoUsuario.js';
 import Materia from './Materia.js';
@@ -12,6 +12,8 @@ import EstatisticaGeral from './EstatisticaGeral.js';
 import Turma from './Turma.js';
 import Escola from './Escola.js';
 import Avatar from './Avatar.js';
+import Sala from './Sala.js';         
+import SalaAluno from './SalaAluno.js'; 
 
 // Associações relacionadas a TipoUsuario
 TipoUsuario.hasMany(Usuario, { foreignKey: 'tipo_usuario_id', as: 'usuarios' });
@@ -90,3 +92,15 @@ Alternativa.hasMany(RespostaQuiz, { foreignKey: 'alternativa_id', as: 'respostas
 RespostaQuiz.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
 RespostaQuiz.belongsTo(Pergunta, { foreignKey: 'pergunta_id', as: 'pergunta' });
 RespostaQuiz.belongsTo(Alternativa, { foreignKey: 'alternativa_id', as: 'alternativa' });
+
+// Associação para o vencedor da sala (relacionamento direto com Usuario)
+Usuario.hasMany(Sala, { foreignKey: 'vencedor_id', as: 'salas_vencidas' });
+Sala.belongsTo(Usuario, { foreignKey: 'vencedor_id', as: 'vencedor' });
+
+// Associação de um para muitos entre Sala e SalaAluno
+Sala.hasMany(SalaAluno, { foreignKey: 'sala_id', as: 'alunosConectados' });
+SalaAluno.belongsTo(Sala, { foreignKey: 'sala_id', as: 'sala' });
+
+// Associação de um para muitos entre Usuario e SalaAluno
+Usuario.hasMany(SalaAluno, { foreignKey: 'usuario_id', as: 'salasParticipadas' });
+SalaAluno.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });

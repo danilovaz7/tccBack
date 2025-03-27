@@ -413,7 +413,7 @@ module.exports = {
           key: 'id',
         },
         onDelete: 'CASCADE',
-        allowNull: false,
+        allowNull: true,
       },
       data_partida: {
         type: Sequelize.DATE,
@@ -624,6 +624,84 @@ module.exports = {
       },
     });
 
+    await queryInterface.createTable('salas', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+      },
+      codigo: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      status: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: 'aberta' 
+      },
+      vencedor_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'usuarios',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+        allowNull: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+    });
+
+    await queryInterface.createTable('sala_alunos', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+      },
+      sala_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'salas',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      usuario_id                         : {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'usuarios',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      
+    });
+
+    
   },
 
   async down (queryInterface, Sequelize) {
@@ -634,13 +712,12 @@ module.exports = {
     await queryInterface.dropTable('perguntas');
     await queryInterface.dropTable('historico_partidas');
     await queryInterface.dropTable('elo_materias');
-    await queryInterface.dropTable('salas_jogadores');
-    await queryInterface.dropTable('salas_materias');
-    await queryInterface.dropTable('salas');
     await queryInterface.dropTable('subelos');
     await queryInterface.dropTable('elos');
-    await queryInterface.dropTable('materias');
+    await queryInterface.dropTable('sala_alunos');
+    await queryInterface.dropTable('salas');
     await queryInterface.dropTable('usuarios');
+    await queryInterface.dropTable('materias');
     await queryInterface.dropTable('avatares');
     await queryInterface.dropTable('turmas');
     await queryInterface.dropTable('escolas');
