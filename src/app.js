@@ -38,10 +38,9 @@ const io = new Server(server, {
 
 // Evento de conexão do Socket.io
 io.on("connection", (socket) => {
-    
     console.log(`Novo cliente conectado: ${socket.id}`);
 
-    socket.on("joinRoom", ({roomId, userName}) => {
+    socket.on("joinRoom", ({ roomId, userName }) => {
         socket.join(roomId);
         console.log(`Usuário ${userName} entrou na sala ${roomId}`);
         socket.to(roomId).emit("userJoined", { message: `Um novo usuário entrou na sala ${roomId}` });
@@ -50,6 +49,12 @@ io.on("connection", (socket) => {
     socket.on("message", ({ roomId, message, userName }) => {
         console.log(`Mensagem recebida na sala ${roomId}: ${message}`);
         io.to(roomId).emit("newMessage", { message, sender: userName });
+    });
+
+    // Novo handler para tratar a seleção de matérias
+    socket.on("materiasSelecionadas", ({ roomId, selectedMaterias }) => {
+        console.log(`Matérias selecionadas na sala ${roomId}:`, selectedMaterias);
+        socket.to(roomId).emit("materiasSelecionadas", selectedMaterias);
     });
 
     socket.on("disconnect", () => {

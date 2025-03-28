@@ -18,6 +18,15 @@ const Sala = database.define('salas', {
     allowNull: false,
     defaultValue: 'aberta'
   },
+  host_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'usuarios',
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+  },
   vencedor_id: {
     type: DataTypes.INTEGER,
     allowNull: true,

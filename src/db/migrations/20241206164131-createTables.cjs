@@ -563,6 +563,15 @@ module.exports = {
         allowNull: false,
         defaultValue: 'aberta' 
       },
+      host_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'usuarios',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+        allowNull: false,
+      },
       vencedor_id: {
         type: Sequelize.INTEGER,
         references: {

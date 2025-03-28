@@ -82,6 +82,10 @@ RespostaQuiz.belongsTo(Alternativa, { foreignKey: 'alternativa_id', as: 'alterna
 Usuario.hasMany(Sala, { foreignKey: 'vencedor_id', as: 'salas_vencidas' });
 Sala.belongsTo(Usuario, { foreignKey: 'vencedor_id', as: 'vencedor' });
 
+// Associação para o host da sala (relacionamento direto com Usuario)
+Usuario.hasMany(Sala, { foreignKey: 'host_id', as: 'salas_criadas' });
+Sala.belongsTo(Usuario, { foreignKey: 'host_id', as: 'host' });
+
 // Associação de um para muitos entre Sala e SalaAluno
 Sala.hasMany(SalaAluno, { foreignKey: 'sala_id', as: 'alunosConectados' });
 SalaAluno.belongsTo(Sala, { foreignKey: 'sala_id', as: 'sala' });
