@@ -4,7 +4,6 @@ import Usuario from './Usuario.js';
 import TipoUsuario from './TipoUsuario.js';
 import Materia from './Materia.js';
 import EloMateria from './EloMateria.js';
-import HistoricoPartida from './HistoricoPartida.js';
 import Pergunta from './Pergunta.js';
 import Alternativa from './Alternativa.js';
 import RespostaQuiz from './RespostaQuiz.js';
@@ -50,24 +49,10 @@ EloMateria.belongsTo(Elo, { foreignKey: 'elo_id', as: 'elo' });
 Subelo.hasMany(EloMateria, { foreignKey: 'subelo_id', as: 'subelos_materia' });
 EloMateria.belongsTo(Subelo, { foreignKey: 'subelo_id', as: 'subelo' });
 
-// Associações relacionadas a Usuarios e HistoricoPartidas
-Usuario.hasMany(HistoricoPartida, { foreignKey: 'usuario_id_1', as: 'historico_partidas_como_1' });
-Usuario.hasMany(HistoricoPartida, { foreignKey: 'usuario_id_2', as: 'historico_partidas_como_2' });
-HistoricoPartida.belongsTo(Usuario, { foreignKey: 'usuario_id_1', as: 'usuario_1' });
-HistoricoPartida.belongsTo(Usuario, { foreignKey: 'usuario_id_2', as: 'usuario_2' });
 
-// Associações relacionadas a Materias em HistoricoPartidas
-Materia.hasMany(HistoricoPartida, { foreignKey: 'materia_id_1', as: 'partidas_materia_1' });
-Materia.hasMany(HistoricoPartida, { foreignKey: 'materia_id_2', as: 'partidas_materia_2' });
-Materia.hasMany(HistoricoPartida, { foreignKey: 'materia_aleatoria_id', as: 'partidas_materia_aleatoria' });
 
-HistoricoPartida.belongsTo(Materia, { foreignKey: 'materia_id_1', as: 'materia_1' });
-HistoricoPartida.belongsTo(Materia, { foreignKey: 'materia_id_2', as: 'materia_2' });
-HistoricoPartida.belongsTo(Materia, { foreignKey: 'materia_aleatoria_id', as: 'materia_aleatoria' });
 
-// Associações relacionadas a Usuarios e HistoricoPartidas (vencedor)
-Usuario.hasMany(HistoricoPartida, { foreignKey: 'vencedor_id', as: 'partidas_vencidas' });
-HistoricoPartida.belongsTo(Usuario, { foreignKey: 'vencedor_id', as: 'vencedor' });
+
 
 // Associações relacionadas a Materias e Perguntas
 Materia.hasMany(Pergunta, { foreignKey: 'materia_id', as: 'perguntas' });

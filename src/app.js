@@ -38,17 +38,18 @@ const io = new Server(server, {
 
 // Evento de conexão do Socket.io
 io.on("connection", (socket) => {
+    
     console.log(`Novo cliente conectado: ${socket.id}`);
 
-    socket.on("joinRoom", (roomId) => {
+    socket.on("joinRoom", ({roomId, userName}) => {
         socket.join(roomId);
-        console.log(`Usuário ${socket.id} entrou na sala ${roomId}`);
+        console.log(`Usuário ${userName} entrou na sala ${roomId}`);
         socket.to(roomId).emit("userJoined", { message: `Um novo usuário entrou na sala ${roomId}` });
     });
 
-    socket.on("message", ({ roomId, message }) => {
+    socket.on("message", ({ roomId, message, userName }) => {
         console.log(`Mensagem recebida na sala ${roomId}: ${message}`);
-        io.to(roomId).emit("newMessage", { message, sender: socket.id });
+        io.to(roomId).emit("newMessage", { message, sender: userName });
     });
 
     socket.on("disconnect", () => {
@@ -56,10 +57,8 @@ io.on("connection", (socket) => {
     });
 });
 
-// Iniciando o servidor
 server.listen(process.env.APP_PORT, () => {
     console.log(`O servidor está escutando na porta ${process.env.APP_PORT}`);
 });
 
-// Exportando o 'io' para uso em outros módulos
 export { io };

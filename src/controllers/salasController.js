@@ -1,6 +1,6 @@
 import Sala from "../models/Sala.js";
 import SalaAluno from "../models/SalaAluno.js";
-import { io } from '../app.js'; 
+import { io } from '../app.js';
 
 export async function createSala(req, res) {
     const { codigo, id_host } = req.body;
@@ -32,18 +32,15 @@ export async function entrarSala(req, res) {
             return res.status(404).json({ error: 'Sala não encontrada' });
         }
 
-        // Adiciona o aluno à sala
         const salaAluno = SalaAluno.build({ sala_id: sala.id, usuario_id: id_aluno });
         await salaAluno.validate();
         await salaAluno.save();
 
-        // Busca a lista de alunos atualizada
         const salaAlunos = await SalaAluno.findAll({
             where: { sala_id: sala.id },
             include: ['usuario']
         });
 
-        // Emite para todos os sockets conectados à sala a lista de alunos atualizada
         io.to(sala.id).emit("atualizar_sala", {
             alunosAtualizados: salaAlunos
         });
