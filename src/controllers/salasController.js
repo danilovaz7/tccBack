@@ -8,11 +8,13 @@ import { io } from '../app.js';
 
 export async function createSala(req, res) {
     const { codigo, id_host } = req.body;
+   
 
     try {
         const sala = Sala.build({ codigo, host_id: id_host });
         await sala.validate();
         await sala.save();
+        console.log(sala)
 
         const salaAluno = SalaAluno.build({ sala_id: sala.id, usuario_id: id_host });
         await salaAluno.validate();
@@ -23,6 +25,7 @@ export async function createSala(req, res) {
             salaAluno: salaAluno.toJSON()
         });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ error: 'Erro ao criar sala e/ou salaAluno: ' + error.message });
     }
 }
