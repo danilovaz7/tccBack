@@ -39,9 +39,17 @@ export async function entrarSala(req, res) {
             return res.status(404).json({ error: 'Sala não encontrada' });
         }
 
-        const salaAluno = SalaAluno.build({ sala_id: sala.id, usuario_id: id_aluno });
-        await salaAluno.validate();
-        await salaAluno.save();
+       
+        let salaAluno = await SalaAluno.findOne({
+            where: { sala_id: sala.id, usuario_id: id_aluno }
+        });
+
+        
+        if (!salaAluno) {
+            salaAluno = SalaAluno.build({ sala_id: sala.id, usuario_id: id_aluno });
+            await salaAluno.validate();
+            await salaAluno.save();
+        }
 
         const salaAlunos = await SalaAluno.findAll({
             where: { sala_id: sala.id },
@@ -52,13 +60,14 @@ export async function entrarSala(req, res) {
             alunosAtualizados: salaAlunos
         });
 
-        return res.status(201).json({
+        return res.status(200).json({
             salaAluno: salaAluno.toJSON()
         });
     } catch (error) {
         return res.status(500).json({ error: 'Erro ao adicionar aluno à sala: ' + error.message });
     }
 }
+
 
 export async function getAlunoSala(req, res) {
     const { id } = req.params;
@@ -93,8 +102,6 @@ export async function getSalaById(req, res) {
 
 async function getPerguntasQuizMateria(req, res) {
     const { eloId, turmaId, idMateria1, idMateria2, idMateria3 } = req.params;
-    console.log(req.params)
-    console.log('entrei dei bom')
 
     const eloid = parseInt(eloId);
     const turmaid = parseInt(turmaId);
@@ -105,10 +112,6 @@ async function getPerguntasQuizMateria(req, res) {
     const materia1 = await Materia.findOne({ where: { id: id1 } });
     const materia2 = await Materia.findOne({ where: { id: id2 } });
     const materia3 = await Materia.findOne({ where: { id: id3 } });
-
-    console.log(materia1)
-    console.log(materia2)
-    console.log(materia3)
 
     if (!materia1 || !materia2 || !materia3) {
         return res.status(404).json({ error: 'Uma ou mais matérias não foram encontradas' });
@@ -144,6 +147,7 @@ async function getPerguntasQuizMateria(req, res) {
         ...perguntasMateria2,
         ...perguntasMateria3
     ];
+    console.log(perguntasTotais)
 
     if (perguntasTotais && perguntasTotais.length > 0) {
         res.json(perguntasTotais);
