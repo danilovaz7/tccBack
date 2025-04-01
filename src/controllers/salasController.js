@@ -123,6 +123,7 @@ async function getPerguntasQuizMateria(req, res) {
             elo_id: eloid,
             turma_id: turmaid
         },
+        include: ['alternativas'], 
         limit: 4    
     });
     const perguntasMateria2 = await Pergunta.findAll({
@@ -131,6 +132,7 @@ async function getPerguntasQuizMateria(req, res) {
             elo_id: eloid,
             turma_id: turmaid
         },
+        include: ['alternativas'], 
         limit: 4
     });
     const perguntasMateria3 = await Pergunta.findAll({
@@ -139,6 +141,7 @@ async function getPerguntasQuizMateria(req, res) {
             elo_id: eloid,
             turma_id: turmaid
         },
+        include: ['alternativas'], 
         limit: 4
     });
 
