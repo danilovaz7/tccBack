@@ -11,8 +11,6 @@ import router from './routes/router.js';
 dotenv.config();
 
 const app = express();
-
-// Configuração do CORS
 const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -20,49 +18,36 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
-
-// Middlewares
 app.use(cookieParser());
 app.use(express.json());
-
-// Definindo as rotas
 app.use(router);
 
-// Criando um servidor HTTP para o Socket.IO
 const server = http.createServer(app);
+const io = new Server(server, { cors: corsOptions });
 
-// Inicializando o Socket.IO e vinculando ao servidor HTTP
-const io = new Server(server, {
-  cors: corsOptions
-});
-// Variáveis para gerenciar o quiz
-let perguntasAtuais = [];
-let indicePergunta = 0;
-let timerRodada = null;
-let questionStartTime = 0;
-let fastestTime = Infinity;
-let currentWinner = null;
+/* Variáveis globais para gerenciar o quiz */
+let perguntasAtuais = []; // Perguntas em ordem (definidas pelo host)
+let indicePergunta = 0;   // Pergunta atual
+let timerRodada = null;   // Timer para a pergunta atual
+let questionStartTime = 0; // Momento em que a pergunta foi emitida
+let fastestTime = Infinity; // Menor tempo de resposta (para respostas corretas)
+let currentWinner = null;   // Nome do primeiro a acertar
 
 // Estruturas para armazenar dados por sala
-const scores = {};
-const answeredUsers = {};
-const readyUsersPerRoom = {};
-const usersInRoom = {};
+const scores = {};           // scores[roomId] = { userId: pontos, ... }
+const answeredUsers = {};    // answeredUsers[roomId] = Set de userId que já responderam
+const readyUsersPerRoom = {}; // readyUsersPerRoom[roomId] = Set de userId prontos
+const usersInRoom = {};      // usersInRoom[roomId] = [ { userId, userName }, ... ]
 
 io.on("connection", (socket) => {
   console.log(`Novo cliente conectado: ${socket.id}`);
 
   socket.on("joinRoom", ({ roomId, userId, userName }) => {
-    // Validação dos dados recebidos
-    if (!roomId || !userId || !userName) {
-      console.log(`Dados inválidos para joinRoom: ${roomId}, ${userId}, ${userName}`);
-      return;
-    }
+    if (!roomId || !userId || !userName) return;
     socket.join(roomId);
     if (!usersInRoom[roomId]) {
       usersInRoom[roomId] = [];
     }
-    // Se o usuário não existir na lista, adicione-o
     if (!usersInRoom[roomId].find(u => u.userId === userId)) {
       usersInRoom[roomId].push({ userId, userName });
     }
@@ -78,13 +63,25 @@ io.on("connection", (socket) => {
     readyUsersPerRoom[roomId].add(userId);
     console.log(`Usuário ${userId} pronto na sala ${roomId}`);
     io.to(roomId).emit("updateReady", { readyUserIds: Array.from(readyUsersPerRoom[roomId]) });
+    // Após 500ms, verifica se todos estão prontos
     setTimeout(() => {
       const room = io.sockets.adapter.rooms.get(roomId);
       const totalPlayers = room ? room.size : 0;
       console.log(`Sala ${roomId}: ${readyUsersPerRoom[roomId].size} prontos de ${totalPlayers}`);
       if (readyUsersPerRoom[roomId].size === totalPlayers && totalPlayers > 0) {
-        io.to(roomId).emit("iniciarQuiz");
-        readyUsersPerRoom[roomId].clear();
+        // Countdown de 3 segundos
+        let countdown = 3;
+        const countdownInterval = setInterval(() => {
+          io.to(roomId).emit("countdown", { countdown });
+          countdown--;
+          if (countdown < 0) {
+            clearInterval(countdownInterval);
+            io.to(roomId).emit("iniciarQuiz");
+            // Inicia a primeira pergunta após o countdown
+            startQuestion(roomId);
+            readyUsersPerRoom[roomId].clear();
+          }
+        }, 1000);
       }
     }, 500);
   });
@@ -105,6 +102,7 @@ io.on("connection", (socket) => {
     indicePergunta = 0;
     fastestTime = Infinity;
     currentWinner = null;
+    // Reinicia placar e respostas para a sala
     scores[roomId] = {};
     answeredUsers[roomId] = new Set();
     startQuestion(roomId);
@@ -112,31 +110,30 @@ io.on("connection", (socket) => {
   });
 
   socket.on("responderPergunta", ({ roomId, userId, respostaId, userName }) => {
+    // Cada usuário só pode responder uma vez por pergunta
     if (answeredUsers[roomId] && answeredUsers[roomId].has(userId)) return;
     if (!perguntasAtuais[indicePergunta]) return;
     const perguntaObj = perguntasAtuais[indicePergunta];
-    
-    if (!answeredUsers[roomId]) {
-      answeredUsers[roomId] = new Set();
-    }
+    if (!answeredUsers[roomId]) answeredUsers[roomId] = new Set();
     answeredUsers[roomId].add(userId);
     
     const responseTime = Date.now() - questionStartTime;
     const alternativaRespondida = perguntaObj.alternativas.find(a => a.id === respostaId);
+    
+    // Se a resposta estiver correta, somente o primeiro acerto pontua
     if (alternativaRespondida && alternativaRespondida.correta === true) {
-      // Apenas o primeiro a acertar (com fastestTime ainda igual a Infinity) ganha o ponto
-      if (fastestTime === Infinity) {
+      if (fastestTime === Infinity) { // Nenhum acerto anterior nesta pergunta
         fastestTime = responseTime;
         currentWinner = userName;
-        scores[roomId][userId] = (scores[roomId][userId] || 0) + 1;
-        console.log(`Usuário ${userName} acertou! Pontos: ${scores[roomId][userId]}`);
+        scores[roomId][userId] = 1;
+        console.log(`Usuário ${userName} acertou primeiro! Pontos: ${scores[roomId][userId]}`);
       }
     }
   });
 
   socket.on("disconnect", () => {
     console.log(`Cliente ${socket.id} desconectado`);
-    // Opcional: remova o usuário da lista de usersInRoom para cada sala
+    // Remoção opcional dos usuários da lista de usersInRoom
     for (const roomId in usersInRoom) {
       const index = usersInRoom[roomId].findIndex(u => u.socketId === socket.id);
       if (index !== -1) {
@@ -147,36 +144,57 @@ io.on("connection", (socket) => {
   });
 });
 
+// Função para iniciar a pergunta atual com timer fixo de 10 segundos
 function startQuestion(roomId) {
   const pergunta = perguntasAtuais[indicePergunta];
   if (!pergunta) return;
   
+  // Registra o início da pergunta
   questionStartTime = Date.now();
   fastestTime = Infinity;
   currentWinner = null;
   answeredUsers[roomId] = new Set();
   
+  // Emite a pergunta com tempo de 10 segundos
   io.to(roomId).emit("startQuestion", { pergunta, tempo: 10 });
   
+  // Define o timer fixo de 10 segundos
   timerRodada = setTimeout(() => {
-    const scoreboard = (usersInRoom[roomId] || []).map(user => ({
-      userId: user.userId,
-      userName: user.userName,
-      pontos: scores[roomId][user.userId] || 0
-    }));
+    // Prepara o scoreboard para a rodada
+    const scoreboard = Object.keys(scores[roomId] || {}).map(userId => {
+      const user = usersInRoom[roomId]?.find(u => u.userId === parseInt(userId));
+      return {
+        userId: parseInt(userId),
+        userName: user ? user.userName : "Desconhecido",
+        pontos: scores[roomId][userId]
+      };
+    });
     
+    // Emite o resultado da pergunta com o placar atualizado
     io.to(roomId).emit("resultadoPergunta", { 
       vencedor: currentWinner, 
       respostaCorreta: pergunta.respostaCorreta, 
       scoreboard 
     });
     
+    // Aguarda 5 segundos para exibir o resultado antes de avançar
     setTimeout(() => {
       indicePergunta++;
       if (indicePergunta < perguntasAtuais.length) {
         startQuestion(roomId);
       } else {
-        io.to(roomId).emit("quizFinalizado", { message: "Quiz finalizado!", scoreboard });
+        // Quiz finalizado
+        const finalScoreboard = Object.keys(scores[roomId] || {}).map(userId => {
+          const user = usersInRoom[roomId]?.find(u => u.userId === parseInt(userId));
+          return {
+            userId: parseInt(userId),
+            userName: user ? user.userName : "Desconhecido",
+            pontos: scores[roomId][userId]
+          };
+        });
+        finalScoreboard.sort((a, b) => b.pontos - a.pontos);
+        const vencedorFinal = finalScoreboard[0]?.userName || "Nenhum";
+        io.to(roomId).emit("quizFinalizado", { scoreboard: finalScoreboard, vencedorFinal });
       }
     }, 5000);
   }, 10000);
