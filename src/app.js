@@ -25,19 +25,11 @@ app.use(router);
 const server = http.createServer(app);
 const io = new Server(server, { cors: corsOptions });
 
-/* Variáveis globais para gerenciar o quiz */
-let perguntasAtuais = []; // Perguntas em ordem (definidas pelo host)
-let indicePergunta = 0;   // Pergunta atual
-let timerRodada = null;   // Timer para a pergunta atual
-let questionStartTime = 0; // Momento em que a pergunta foi emitida
-let fastestTime = Infinity; // Menor tempo de resposta (para respostas corretas)
-let currentWinner = null;   // Nome do primeiro a acertar
+// Estado do quiz por sala
+const roomQuiz = {}; // roomQuiz[roomId] = { perguntas, indice, questionStartTime, fastestTime, currentWinner, scores, answeredUsers, timerInterval, timerTimeout }
 
-// Estruturas para armazenar dados por sala
-const scores = {};           // scores[roomId] = { userId: pontos, ... }
-const answeredUsers = {};    // answeredUsers[roomId] = Set de userId que já responderam
 const readyUsersPerRoom = {}; // readyUsersPerRoom[roomId] = Set de userId prontos
-const usersInRoom = {};      // usersInRoom[roomId] = [ { userId, userName }, ... ]
+const usersInRoom = {};       // usersInRoom[roomId] = [ { userId, userName }, ... ]
 
 io.on("connection", (socket) => {
   console.log(`Novo cliente conectado: ${socket.id}`);
@@ -63,11 +55,10 @@ io.on("connection", (socket) => {
     readyUsersPerRoom[roomId].add(userId);
     console.log(`Usuário ${userId} pronto na sala ${roomId}`);
     io.to(roomId).emit("updateReady", { readyUserIds: Array.from(readyUsersPerRoom[roomId]) });
-    // Após 500ms, verifica se todos estão prontos
+    // Verifica se todos estão prontos
     setTimeout(() => {
       const room = io.sockets.adapter.rooms.get(roomId);
       const totalPlayers = room ? room.size : 0;
-      console.log(`Sala ${roomId}: ${readyUsersPerRoom[roomId].size} prontos de ${totalPlayers}`);
       if (readyUsersPerRoom[roomId].size === totalPlayers && totalPlayers > 0) {
         // Countdown de 3 segundos
         let countdown = 3;
@@ -77,7 +68,7 @@ io.on("connection", (socket) => {
           if (countdown < 0) {
             clearInterval(countdownInterval);
             io.to(roomId).emit("iniciarQuiz");
-            // Inicia a primeira pergunta após o countdown
+            // Inicia o quiz (primeira pergunta)
             startQuestion(roomId);
             readyUsersPerRoom[roomId].clear();
           }
@@ -98,42 +89,73 @@ io.on("connection", (socket) => {
 
   socket.on("enviarPerguntas", ({ roomId, perguntas }) => {
     console.log(`Perguntas sendo enviadas para a sala ${roomId}:`, perguntas);
-    perguntasAtuais = perguntas;
-    indicePergunta = 0;
-    fastestTime = Infinity;
-    currentWinner = null;
-    // Reinicia placar e respostas para a sala
-    scores[roomId] = {};
-    answeredUsers[roomId] = new Set();
-    startQuestion(roomId);
+    // Inicializa o estado do quiz para a sala
+    roomQuiz[roomId] = {
+      perguntas: perguntas,
+      indice: 0,
+      questionStartTime: 0,
+      fastestTime: Infinity,
+      currentWinner: null,
+      scores: {},      // scores[usuarioId] = pontos
+      answeredUsers: new Set(),
+      timerInterval: null,
+      timerTimeout: null,
+    };
     io.to(roomId).emit("receberPerguntas", perguntas);
+    startQuestion(roomId);
   });
 
   socket.on("responderPergunta", ({ roomId, userId, respostaId, userName }) => {
-    // Cada usuário só pode responder uma vez por pergunta
-    if (answeredUsers[roomId] && answeredUsers[roomId].has(userId)) return;
-    if (!perguntasAtuais[indicePergunta]) return;
-    const perguntaObj = perguntasAtuais[indicePergunta];
-    if (!answeredUsers[roomId]) answeredUsers[roomId] = new Set();
-    answeredUsers[roomId].add(userId);
-    
-    const responseTime = Date.now() - questionStartTime;
-    const alternativaRespondida = perguntaObj.alternativas.find(a => a.id === respostaId);
-    
-    // Se a resposta estiver correta, somente o primeiro acerto pontua
-    if (alternativaRespondida && alternativaRespondida.correta === true) {
-      if (fastestTime === Infinity) { // Nenhum acerto anterior nesta pergunta
-        fastestTime = responseTime;
-        currentWinner = userName;
-        scores[roomId][userId] = 1;
-        console.log(`Usuário ${userName} acertou primeiro! Pontos: ${scores[roomId][userId]}`);
+    const quiz = roomQuiz[roomId];
+    if (!quiz) return;
+    if (quiz.answeredUsers.has(userId)) return; // já respondeu
+    const perguntaObj = quiz.perguntas[quiz.indice];
+    if (!perguntaObj) return;
+    quiz.answeredUsers.add(userId);
+    const responseTime = Date.now() - quiz.questionStartTime;
+    const alternativa = perguntaObj.alternativas.find(a => a.id === respostaId);
+    if (alternativa && alternativa.correta === true) {
+      if (quiz.fastestTime === Infinity) {
+        quiz.fastestTime = responseTime;
+        quiz.currentWinner = userName;
+        quiz.scores[userId] = (quiz.scores[userId] || 0) + 1;
+        console.log(`Usuário ${userName} acertou primeiro! Pontos: ${quiz.scores[userId]}`);
       }
     }
   });
 
+// Evento para o host iniciar a próxima pergunta
+socket.on("nextQuestion", ({ roomId }) => {
+  const quiz = roomQuiz[roomId];
+  if (!quiz) return;
+
+  // Avança para a próxima pergunta
+  quiz.indice++;
+
+  // Verifica se ainda há perguntas restantes
+  if (quiz.indice < quiz.perguntas.length) {
+    startQuestion(roomId); // Reinicia o ciclo da próxima pergunta
+  } else {
+    // Todas as perguntas foram respondidas, finalizar o quiz
+    const finalScoreboard = Object.keys(quiz.scores).map(userId => {
+      const user = usersInRoom[roomId]?.find(u => u.userId === parseInt(userId));
+      return {
+        userId: parseInt(userId),
+        userName: user ? user.userName : "Desconhecido",
+        pontos: quiz.scores[userId],
+      };
+    });
+
+    finalScoreboard.sort((a, b) => b.pontos - a.pontos);
+    const vencedorFinal = finalScoreboard[0]?.userName || "Nenhum";
+
+    io.to(roomId).emit("quizFinalizado", { scoreboard: finalScoreboard, vencedorFinal });
+  }
+});
+
+
   socket.on("disconnect", () => {
     console.log(`Cliente ${socket.id} desconectado`);
-    // Remoção opcional dos usuários da lista de usersInRoom
     for (const roomId in usersInRoom) {
       const index = usersInRoom[roomId].findIndex(u => u.socketId === socket.id);
       if (index !== -1) {
@@ -146,59 +168,56 @@ io.on("connection", (socket) => {
 
 // Função para iniciar a pergunta atual com timer fixo de 10 segundos
 function startQuestion(roomId) {
-  const pergunta = perguntasAtuais[indicePergunta];
+  const quiz = roomQuiz[roomId];
+  if (!quiz) return;
+
+  const pergunta = quiz.perguntas[quiz.indice];
   if (!pergunta) return;
-  
-  // Registra o início da pergunta
-  questionStartTime = Date.now();
-  fastestTime = Infinity;
-  currentWinner = null;
-  answeredUsers[roomId] = new Set();
-  
-  // Emite a pergunta com tempo de 10 segundos
-  io.to(roomId).emit("startQuestion", { pergunta, tempo: 10 });
-  
-  // Define o timer fixo de 10 segundos
-  timerRodada = setTimeout(() => {
-    // Prepara o scoreboard para a rodada
-    const scoreboard = Object.keys(scores[roomId] || {}).map(userId => {
+
+  // Reinicia os dados da pergunta
+  quiz.questionStartTime = Date.now();
+  quiz.fastestTime = Infinity;
+  quiz.currentWinner = null;
+  quiz.answeredUsers = new Set();
+
+  // Inicializa o tempo restante
+  let remainingTime = 10;
+
+  // Envia a pergunta inicial junto com o tempo
+  io.to(roomId).emit("startQuestion", { pergunta, tempo: remainingTime });
+
+  // Atualização do timer para decremento correto
+  quiz.timerInterval = setInterval(() => {
+    remainingTime--; // Decrementa o tempo
+    if (remainingTime >= 0) {
+      // Emite o tempo atualizado para o front-end
+      io.to(roomId).emit("updateTimer", { remainingTime });
+    } else {
+      // Interrompe o timer ao atingir 0
+      clearInterval(quiz.timerInterval);
+    }
+  }, 1000);
+
+  // Após o término do timer (10 segundos), emite o resultado da pergunta
+  quiz.timerTimeout = setTimeout(() => {
+    const scoreboard = Object.keys(quiz.scores).map(userId => {
       const user = usersInRoom[roomId]?.find(u => u.userId === parseInt(userId));
       return {
         userId: parseInt(userId),
         userName: user ? user.userName : "Desconhecido",
-        pontos: scores[roomId][userId]
+        pontos: quiz.scores[userId] || 0,
       };
     });
-    
-    // Emite o resultado da pergunta com o placar atualizado
-    io.to(roomId).emit("resultadoPergunta", { 
-      vencedor: currentWinner, 
-      respostaCorreta: pergunta.respostaCorreta, 
-      scoreboard 
+
+    io.to(roomId).emit("resultadoPergunta", {
+      vencedor: quiz.currentWinner || 'ninguém',
+      respostaCorreta: pergunta.respostaCorreta,
+      scoreboard,
     });
-    
-    // Aguarda 5 segundos para exibir o resultado antes de avançar
-    setTimeout(() => {
-      indicePergunta++;
-      if (indicePergunta < perguntasAtuais.length) {
-        startQuestion(roomId);
-      } else {
-        // Quiz finalizado
-        const finalScoreboard = Object.keys(scores[roomId] || {}).map(userId => {
-          const user = usersInRoom[roomId]?.find(u => u.userId === parseInt(userId));
-          return {
-            userId: parseInt(userId),
-            userName: user ? user.userName : "Desconhecido",
-            pontos: scores[roomId][userId]
-          };
-        });
-        finalScoreboard.sort((a, b) => b.pontos - a.pontos);
-        const vencedorFinal = finalScoreboard[0]?.userName || "Nenhum";
-        io.to(roomId).emit("quizFinalizado", { scoreboard: finalScoreboard, vencedorFinal });
-      }
-    }, 5000);
   }, 10000);
 }
+
+
 
 server.listen(process.env.APP_PORT, () => {
   console.log(`O servidor está escutando na porta ${process.env.APP_PORT}`);
