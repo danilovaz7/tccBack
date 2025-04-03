@@ -102,7 +102,6 @@ io.on("connection", (socket) => {
       timerTimeout: null,
     };
     io.to(roomId).emit("receberPerguntas", perguntas);
-    startQuestion(roomId);
   });
 
   socket.on("responderPergunta", ({ roomId, userId, respostaId, userName }) => {

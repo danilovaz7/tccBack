@@ -5,13 +5,13 @@ import Usuario from "../models/Usuario.js"
 
 async function getEstatisticasByUser(req, res) {
     const { id } = req.params
+    const idUsuario = parseInt(id)
 
     const estatisticas = await EstatisticaGeral.findOne({
-        where: { usuario_id: id }
+        where: { usuario_id: idUsuario }
     })
 
     if (estatisticas) {
-        console.log(estatisticas.toJSON())
         res.json(estatisticas.toJSON())
     } else {
         res.status(404).json({ error: 'Estatísticas do usuário não encontradas' })
@@ -22,7 +22,10 @@ async function updateEstatisticasByUser(req, res) {
     const { id } = req.params
     const { total_perguntas, total_perguntas_acertadas,total_disputas,total_disputas_ganhas } = req.body
 
-    const estatisticas = await EstatisticaGeral.findByPk(id)
+
+    const estatisticas = await EstatisticaGeral.findOne({
+        where: { usuario_id: id }
+    })
 
     if (!estatisticas) {
         return res.status(404).json({ error: 'estatisticas de usuario não encontrado' })
@@ -50,6 +53,4 @@ async function updateEstatisticasByUser(req, res) {
 export default {
     getEstatisticasByUser,
     updateEstatisticasByUser,
-    
-
 }
