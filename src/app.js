@@ -34,14 +34,14 @@ const usersInRoom = {};       // usersInRoom[roomId] = [ { userId, userName }, .
 io.on("connection", (socket) => {
   console.log(`Novo cliente conectado: ${socket.id}`);
 
-  socket.on("joinRoom", ({ roomId, userId, userName }) => {
+  socket.on("joinRoom", ({ roomId, userId, userName,lvl }) => {
     if (!roomId || !userId || !userName) return;
     socket.join(roomId);
     if (!usersInRoom[roomId]) {
       usersInRoom[roomId] = [];
     }
     if (!usersInRoom[roomId].find(u => u.userId === userId)) {
-      usersInRoom[roomId].push({ userId, userName });
+      usersInRoom[roomId].push({ userId, userName,lvl });
     }
     console.log(`Usuário ${userName} (ID: ${userId}) entrou na sala ${roomId}`);
     io.to(roomId).emit("playersUpdated", usersInRoom[roomId]);
