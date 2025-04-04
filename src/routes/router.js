@@ -68,6 +68,7 @@ router.get('/sala/:codigo',salasController.getSalaById)
 router.get('/sala-alunos/:id',salasController.getAlunoSala)
 router.post('/entrar/sala',salasController.entrarSala)
 router.get('/sala/perguntas/:eloId/:turmaId/:idMateria1/:idMateria2/:idMateria3',salasController.getPerguntasQuizMateria)
+router.put('/sala/:codigo', salasController.updateSala)
 
 router.post('/login',loginController.login)
 router.get('/eu', pegarUsuarioDoToken)

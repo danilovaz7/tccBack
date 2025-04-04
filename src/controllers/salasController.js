@@ -14,7 +14,7 @@ export async function createSala(req, res) {
         const sala = Sala.build({ codigo, host_id: id_host });
         await sala.validate();
         await sala.save();
-        console.log(sala)
+       
 
         const salaAluno = SalaAluno.build({ sala_id: sala.id, usuario_id: id_host });
         await salaAluno.validate();
@@ -35,8 +35,17 @@ export async function entrarSala(req, res) {
 
     try {
         const sala = await Sala.findOne({ where: { codigo } });
+        
         if (!sala) {
             return res.status(404).json({ error: 'Sala não encontrada' });
+        }
+
+        if (sala.status === 'em andamento') {
+            return res.status(404).json({ error: 'Sala em andamento' });
+        }
+
+        if (sala.status === 'encerrada') {
+            return res.status(404).json({ error: 'Sala em encerrada' });
         }
 
        
@@ -150,7 +159,7 @@ async function getPerguntasQuizMateria(req, res) {
         ...perguntasMateria2,
         ...perguntasMateria3
     ];
-    console.log(perguntasTotais)
+
 
     if (perguntasTotais && perguntasTotais.length > 0) {
         res.json(perguntasTotais);
@@ -172,10 +181,41 @@ async function getAternativasPerguntaMateria(req, res) {
     }
 }
 
+async function updateSala(req, res) {
+    const { codigo } = req.params
+    const {status,vencedor_id,updatedAt } = req.body
+
+    const sala = await Sala.findOne({where:{codigo}})
+
+    if (!sala) {
+        return res.status(404).json({ error: 'materia não encontrado' })
+    }
+
+    if (status) sala.status = status
+    if (vencedor_id) sala.vencedor_id = vencedor_id
+    if (updatedAt) sala.updatedAt = updatedAt
+
+    try {
+        await sala.validate()
+    } catch (error) {
+        return res.status(400).json({ error: 'Informações de sala inválidas: ' + error.message })
+    }   
+
+    try {
+        await sala.save()
+        res.json(sala.toJSON())
+    } catch(error) {
+        res.status(500).json({ error: 'Erro ao atualizar sala: ' + error.message })
+    }
+}
+
+
 export default {
     createSala,
     getAlunoSala,
     getSalaById,
     entrarSala,
-    getPerguntasQuizMateria
+    getPerguntasQuizMateria,
+    getAternativasPerguntaMateria,
+    updateSala
 };

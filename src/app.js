@@ -146,7 +146,7 @@ socket.on("nextQuestion", ({ roomId }) => {
     });
 
     finalScoreboard.sort((a, b) => b.pontos - a.pontos);
-    const vencedorFinal = finalScoreboard[0]?.userName || "Nenhum";
+    const vencedorFinal = finalScoreboard[0]?.userId || "Nenhum";
 
     io.to(roomId).emit("quizFinalizado", { scoreboard: finalScoreboard, vencedorFinal });
   }
@@ -187,7 +187,7 @@ function startQuestion(roomId) {
 
   // Atualização do timer para decremento correto
   quiz.timerInterval = setInterval(() => {
-    remainingTime--; // Decrementa o tempo
+    remainingTime--; 
     if (remainingTime >= 0) {
       // Emite o tempo atualizado para o front-end
       io.to(roomId).emit("updateTimer", { remainingTime });
