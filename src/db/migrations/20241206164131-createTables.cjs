@@ -451,53 +451,6 @@ module.exports = {
       },
     });
 
-   
-
-    // Tabela de estatísticas gerais
-    await queryInterface.createTable('estatisticas_gerais', {
-      id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        allowNull: false,
-      },
-      usuario_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'usuarios',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-        allowNull: false,
-      },
-      total_perguntas: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-      },
-      total_perguntas_acertadas: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-      },
-      total_disputas: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-      },
-      total_disputas_ganhas: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-      },
-    });
-
     await queryInterface.createTable('salas', {
       id: {
         type: Sequelize.INTEGER,
@@ -675,7 +628,6 @@ module.exports = {
 
   async down (queryInterface, Sequelize) {
     // Remover tabelas na ordem inversa da criação
-    await queryInterface.dropTable('estatisticas_gerais');
     await queryInterface.dropTable('sala_aluno_respostas');
     await queryInterface.dropTable('sala_perguntas');
     await queryInterface.dropTable('sala_alunos');

@@ -26,7 +26,6 @@ router.get('/usuarios/:id',usuariosController.getUserById)
 router.put('/usuarios/:id', usuariosController.updateUser)
 router.delete('/usuarios/:id',usuariosController.deleteUser)
 router.get('/estatisticas/:id',estatisticasController.getEstatisticasByUser)
-router.put('/estatisticas/:id',estatisticasController.updateEstatisticasByUser)
 
 router.get('/cargos',usuariosController.getTipoUsuarios)
 

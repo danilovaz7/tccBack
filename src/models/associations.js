@@ -8,7 +8,6 @@ import EloMateria from './EloMateria.js';
 import Pergunta from './Pergunta.js';
 import Alternativa from './Alternativa.js';
 import RespostaQuiz from './RespostaQuiz.js';
-import EstatisticaGeral from './EstatisticaGeral.js';
 import Turma from './Turma.js';
 import Escola from './Escola.js';
 import Avatar from './Avatar.js';
@@ -38,10 +37,6 @@ Usuario.belongsTo(Escola, { foreignKey: 'id_escola', as: 'escola' });
 // Avatar e Usuario
 Avatar.hasMany(Usuario, { foreignKey: 'id_avatar', as: 'usuarios' });
 Usuario.belongsTo(Avatar, { foreignKey: 'id_avatar', as: 'avatar' });
-
-// EstatisticaGeral e Usuario
-Usuario.hasOne(EstatisticaGeral, { foreignKey: 'usuario_id', as: 'estatisticas_gerais' });
-EstatisticaGeral.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
 
 // Materia e EloMateria
 Materia.hasMany(EloMateria, { foreignKey: 'materia_id', as: 'elos' });

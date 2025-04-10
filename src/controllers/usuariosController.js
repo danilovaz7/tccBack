@@ -1,7 +1,6 @@
 import Usuario from "../models/Usuario.js"
 import EloMateria from "../models/EloMateria.js"
 import Materia from "../models/Materia.js"
-import EstatisticaGeral from "../models/EstatisticaGeral.js";
 import TipoUsuario from "../models/TipoUsuario.js";
 import { Sequelize } from 'sequelize';
 
@@ -35,20 +34,7 @@ async function createUser(req, res) {
         return res.status(500).json({ error: 'Erro ao criar usuário: ' + error.message });
     }
 
-    const estatisticasUsuario = EstatisticaGeral.build({ usuario_id: usuario.id, total_perguntas: 0, total_perguntas_acertadas: 0, total_disputas: 0, total_disputas_ganhas: 0 })
-
-    try {
-        await estatisticasUsuario.validate();
-    } catch (error) {
-        return res.status(400).json({ error: 'Estatistiacs de usuário inválidas: ' + error.message });
-    }
-
-    try {
-        await estatisticasUsuario.save();
-    } catch (error) {
-        return res.status(500).json({ error: 'Erro ao criar estatisticasUsuario de usuário: ' + error.message });
-    }
-
+    
     try {
         const materias = await Materia.findAll();
         const userId = usuario.id;
