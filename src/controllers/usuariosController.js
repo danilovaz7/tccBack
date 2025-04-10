@@ -78,7 +78,6 @@ async function getUsers(req, res) {
       where: { tipo_usuario_id: 2 },
       include: [
         'avatar',
-        'estatisticas_gerais',
         {
           model: EloMateria,
           as: 'elos',
