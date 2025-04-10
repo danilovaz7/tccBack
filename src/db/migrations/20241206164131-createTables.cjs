@@ -451,56 +451,7 @@ module.exports = {
       },
     });
 
-    // Tabela de respostas de quiz
-    await queryInterface.createTable('respostas_quiz', {
-      id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        allowNull: false,
-      },
-      usuario_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'usuarios',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-        allowNull: false,
-      },
-      pergunta_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'perguntas',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-        allowNull: false,
-      },
-      alternativa_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'alternativas',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-        allowNull: false,
-      },
-      data_resposta: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-      },
-    });
+   
 
     // Tabela de estatísticas gerais
     await queryInterface.createTable('estatisticas_gerais', {
@@ -610,7 +561,7 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      usuario_id                         : {
+      usuario_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -630,22 +581,109 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
-      
     });
 
-    
+    await queryInterface.createTable('sala_perguntas', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+      },
+      sala_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'salas',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      pergunta_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'perguntas',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+    });
+
+    await queryInterface.createTable('sala_aluno_respostas', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+      },
+      sala_aluno_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'sala_alunos',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      sala_pergunta_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'sala_perguntas',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      resposta_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'alternativas',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+    });
+
   },
 
   async down (queryInterface, Sequelize) {
     // Remover tabelas na ordem inversa da criação
     await queryInterface.dropTable('estatisticas_gerais');
-    await queryInterface.dropTable('respostas_quiz');
+    await queryInterface.dropTable('sala_aluno_respostas');
+    await queryInterface.dropTable('sala_perguntas');
+    await queryInterface.dropTable('sala_alunos');
     await queryInterface.dropTable('alternativas');
     await queryInterface.dropTable('perguntas');
     await queryInterface.dropTable('elo_materias');
     await queryInterface.dropTable('subelos');
     await queryInterface.dropTable('elos');
-    await queryInterface.dropTable('sala_alunos');
     await queryInterface.dropTable('salas');
     await queryInterface.dropTable('usuarios');
     await queryInterface.dropTable('materias');

@@ -107,12 +107,13 @@ io.on("connection", (socket) => {
   socket.on("responderPergunta", ({ roomId, userId, respostaId, userName }) => {
     const quiz = roomQuiz[roomId];
     if (!quiz) return;
-    if (quiz.answeredUsers.has(userId)) return; // já respondeu
+    if (quiz.answeredUsers.has(userId)) return; 
     const perguntaObj = quiz.perguntas[quiz.indice];
     if (!perguntaObj) return;
     quiz.answeredUsers.add(userId);
     const responseTime = Date.now() - quiz.questionStartTime;
     const alternativa = perguntaObj.alternativas.find(a => a.id === respostaId);
+    console.log(`id usuario ${userId} respondeu pergunta de id ${respostaId}`)
     if (alternativa && alternativa.correta === true) {
       if (quiz.fastestTime === Infinity) {
         quiz.fastestTime = responseTime;

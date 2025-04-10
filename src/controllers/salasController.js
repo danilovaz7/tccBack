@@ -3,6 +3,8 @@ import SalaAluno from "../models/SalaAluno.js";
 import Alternativa from  "../models/Alternativa.js"
 import Pergunta from  "../models/Pergunta.js"
 import Materia from "../models/Materia.js"
+import SalaPergunta from "../models/SalaPergunta.js"   
+import SalaAlunoResposta from "../models/SalaAlunoResposta.js"
 
 import { io } from '../app.js';
 
@@ -110,14 +112,16 @@ export async function getSalaById(req, res) {
 }
 
 async function getPerguntasQuizMateria(req, res) {
-    const { eloId, turmaId, idMateria1, idMateria2, idMateria3 } = req.params;
-
+    const { eloId, turmaId, idMateria1, idMateria2, idMateria3,salaId } = req.params;
+   
+    const sala_id = parseInt(salaId)
     const eloid = parseInt(eloId);
     const turmaid = parseInt(turmaId);
     const id1 = parseInt(idMateria1);
     const id2 = parseInt(idMateria2);
     const id3 = parseInt(idMateria3);
 
+    // Supondo que os modelos Materia e Pergunta já foram importados corretamente
     const materia1 = await Materia.findOne({ where: { id: id1 } });
     const materia2 = await Materia.findOne({ where: { id: id2 } });
     const materia3 = await Materia.findOne({ where: { id: id3 } });
@@ -126,6 +130,7 @@ async function getPerguntasQuizMateria(req, res) {
         return res.status(404).json({ error: 'Uma ou mais matérias não foram encontradas' });
     }
 
+    // Busca de perguntas para cada matéria
     const perguntasMateria1 = await Pergunta.findAll({
         where: {
             materia_id: materia1.id,
@@ -160,14 +165,28 @@ async function getPerguntasQuizMateria(req, res) {
         ...perguntasMateria3
     ];
 
-
     if (perguntasTotais && perguntasTotais.length > 0) {
-        res.json(perguntasTotais);
+        try {
+            // Percorre cada pergunta e insere um registro na tabela SalaPergunta usando build, validate e save
+            for (const pergunta of perguntasTotais) {
+                const salaPergunta = SalaPergunta.build({
+                    sala_id: sala_id,         // vindo do req.body
+                    pergunta_id: pergunta.id  // id da pergunta selecionada
+                });
+            
+                await salaPergunta.validate();
+                await salaPergunta.save();
+            }
+        
+            return res.json(perguntasTotais);
+        } catch (error) {
+            console.error('Erro ao salvar sala_perguntas:', error);
+            return res.status(500).json({ error: 'Erro ao inserir relação sala-pergunta' });
+        }
     } else {
-        res.status(404).json({ error: 'Perguntas não encontradas' });
+        return res.status(404).json({ error: 'Perguntas não encontradas' });
     }
 }
-
 
 async function getAternativasPerguntaMateria(req, res) {
     const { id } = req.params
@@ -180,6 +199,60 @@ async function getAternativasPerguntaMateria(req, res) {
         res.status(404).json({ error: 'perguntasMateria não encontrado' })
     }
 }
+
+async function criarSalaAlunoResposta(req, res) {
+    const { sala_id, usuario_id, pergunta_id, resposta_id } = req.body;
+    console.log('deu certooooo')
+    console.log('sala_id',sala_id)
+    console.log('usuario_id',usuario_id)
+    console.log('pergunta_id',pergunta_id)
+    console.log('resposta_id',resposta_id)
+  
+   
+    if (!sala_id || !usuario_id || !pergunta_id || !resposta_id) {
+      return res.status(400).json({ error: 'É necessário enviar sala_id, usuario_id, pergunta_id e resposta_id' });
+    }
+  
+    try {
+      const salaAluno = await SalaAluno.findOne({
+        where: {
+          sala_id,
+          usuario_id
+        }
+      });
+  
+      if (!salaAluno) {
+        return res.status(404).json({ error: 'Registro de SalaAluno não encontrado para os dados informados.' });
+      }
+  
+    
+      const salaPergunta = await SalaPergunta.findOne({
+        where: {
+          sala_id,
+          pergunta_id
+        }
+      });
+  
+      if (!salaPergunta) {
+        return res.status(404).json({ error: 'Registro de SalaPergunta não encontrado para os dados informados.' });
+      }
+  
+
+      const salaAlunoResposta = SalaAlunoResposta.build({
+        sala_aluno_id: salaAluno.id,
+        sala_pergunta_id: salaPergunta.id,
+        resposta_id 
+      });
+  
+      await salaAlunoResposta.validate();
+      await salaAlunoResposta.save();
+  
+      return res.status(201).json({ message: 'Resposta registrada com sucesso.', data: salaAlunoResposta });
+    } catch (error) {
+      console.error('Erro ao criar sala_aluno_resposta:', error);
+      return res.status(500).json({ error: 'Erro ao registrar a resposta.' });
+    }
+  }
 
 async function updateSala(req, res) {
     const { codigo } = req.params
@@ -217,5 +290,6 @@ export default {
     entrarSala,
     getPerguntasQuizMateria,
     getAternativasPerguntaMateria,
+    criarSalaAlunoResposta,
     updateSala
 };
