@@ -17,6 +17,7 @@ import escolasController from '../controllers/escolasController.js'
 import nivelController from '../controllers/nivelController.js';
 import turmasController from '../controllers/turmasController.js';
 import salasController from '../controllers/salasController.js';
+import dashboardController from '../controllers/dashboardController.js';
 
 const router = Router()
 
@@ -61,6 +62,7 @@ router.get('/escolas',escolasController.getEscolas)
 
 router.get('/turmas',turmasController.getTurmas)
 
+router.get('/dashboard', dashboardController.getDashboardStats);
 
 router.post('/sala',salasController.createSala)
 router.get('/sala/:codigo',salasController.getSalaById)
