@@ -12,6 +12,11 @@ const Escola = database.define('escolas', {
   nome: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true, 
+  },
+  cnpj: {
+    type: DataTypes.STRING,
+    allowNull: false,
     unique: true, // Cada tipo de usuário deve ser único
   },
 }, {

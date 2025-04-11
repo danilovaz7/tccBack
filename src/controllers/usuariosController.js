@@ -1,9 +1,10 @@
-import Usuario from "../models/Usuario.js"
-import EloMateria from "../models/EloMateria.js"
-import Materia from "../models/Materia.js"
-import TipoUsuario from "../models/TipoUsuario.js";
 import { Sequelize } from 'sequelize';
-
+import Usuario from "../models/Usuario.js";
+import EloMateria from "../models/EloMateria.js";
+import Materia from "../models/Materia.js";
+import TipoUsuario from "../models/TipoUsuario.js";
+import SalaAluno from "../models/SalaAluno.js";
+import Sala from "../models/Sala.js";
 import generator from "generate-password";
 
 export function generateRandomPassword() {
@@ -63,6 +64,7 @@ async function createUser(req, res) {
 }
 
 async function getUsers(req, res) {
+    // Parâmetros de consulta
     const limit = req.query.limit ? parseInt(req.query.limit) : null;
     const orderField = req.query.order ? req.query.order : null;
     let orderDirection = req.query.orderDirection ? req.query.orderDirection : 'DESC';
@@ -92,34 +94,57 @@ async function getUsers(req, res) {
       queryOptions.where.id_turma = id_turma;
     }
     if (id_escola) {
-        queryOptions.where.id_escola = id_escola;
-      }
+      queryOptions.where.id_escola = id_escola;
+    }
     if (limit !== null) {
       queryOptions.limit = limit;
     }
   
     if (orderField === 'elo') {
-        if (!materia_id) {
-          return res.status(400).json({
-            error: "Para ordenar por elo, o parâmetro materia_id deve ser fornecido."
-          });
-        } else {
-          queryOptions.order = [
-            [Sequelize.col('elos.elo_id'), orderDirection],
-            [Sequelize.col('elos.subelo_id'), 'DESC']
-          ];
-        }
+      if (!materia_id) {
+        return res.status(400).json({
+          error: "Para ordenar por elo, o parâmetro materia_id deve ser fornecido."
+        });
       } else {
-        queryOptions.order = [[orderField, orderDirection]];
+        queryOptions.order = [
+          [Sequelize.col('elos.elo_id'), orderDirection],
+          [Sequelize.col('elos.subelo_id'), 'DESC']
+        ];
       }
+    } else {
+      queryOptions.order = [[orderField, orderDirection]];
+    }
   
     try {
       const usuarios = await Usuario.findAll(queryOptions);
-      res.json(Array.isArray(usuarios) ? usuarios : []);
+  
+      // Para cada usuário, calcular o win rate
+      const usuariosComWinRate = await Promise.all(usuarios.map(async (usuario) => {
+        // Total de disputas: salas encerradas nas quais o usuário participou
+        const total_disputas = await SalaAluno.count({
+          include: {
+            model: Sala,
+            as: 'sala',
+            where: { status: 'encerrada' },
+          },
+          where: { usuario_id: usuario.id }
+        });
+  
+        // Disputas ganhas: salas onde o usuário foi declarado vencedor
+        const total_disputas_ganhas = await Sala.count({
+          where: { vencedor_id: usuario.id }
+        });
+  
+        const winRate = total_disputas > 0 ? (total_disputas_ganhas / total_disputas) * 100 : 0;
+  
+        return { ...usuario.toJSON(), winRate: winRate.toFixed(2) };
+      }));
+  
+      res.json(Array.isArray(usuariosComWinRate) ? usuariosComWinRate : []);
     } catch (error) {
       res.status(500).json({ error: 'Erro ao buscar usuários', message: error.message });
     }
-  }
+}
 
 
 async function getUserById(req, res) {

@@ -6,6 +6,7 @@ module.exports = {
     await queryInterface.bulkInsert('escolas', [
       {
         nome: 'Escola X',
+        cnpj: '28733848000149',
         createdAt: new Date(),
         updatedAt: new Date()
       },
