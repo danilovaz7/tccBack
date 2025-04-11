@@ -73,7 +73,7 @@ async function getUsers(req, res) {
     if (orderField === 'nome') {
       orderDirection = 'ASC';
     }
-  
+
     const queryOptions = {
       where: { tipo_usuario_id: 2 },
       include: [

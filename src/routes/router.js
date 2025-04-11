@@ -62,7 +62,7 @@ router.get('/escolas',escolasController.getEscolas)
 
 router.get('/turmas',turmasController.getTurmas)
 
-router.get('/dashboard', dashboardController.getDashboardStats);
+router.get('/escola/:id/dashboard', dashboardController.getDashboardStats);
 
 router.post('/sala',salasController.createSala)
 router.get('/sala/:codigo',salasController.getSalaById)
