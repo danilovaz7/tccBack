@@ -402,6 +402,16 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: false,
       },
+      criador_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'usuarios',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
       pergunta: {
         type: Sequelize.TEXT,
         allowNull: false,
@@ -470,6 +480,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
         defaultValue: 'aberta' 
+      },
+      tipo: {
+        type: Sequelize.STRING,
+        allowNull: false, 
       },
       host_id: {
         type: Sequelize.INTEGER,

@@ -18,6 +18,10 @@ const Sala = database.define('salas', {
     allowNull: false,
     defaultValue: 'aberta'
   },
+  tipo: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   host_id: {
     type: DataTypes.INTEGER,
     allowNull: false,

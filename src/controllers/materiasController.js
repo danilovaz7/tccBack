@@ -62,8 +62,8 @@ async function getEloMaterias(req, res) {
 }
 
 async function createPergunta(req, res) {
-    const { materia_id, elo_id, turma_id, escola_id, pergunta, alternativas, alternativaCorreta } = req.body;
-    const perguntaNova = Pergunta.build({ materia_id, elo_id, turma_id, escola_id, pergunta });
+    const { materia_id, elo_id, turma_id, escola_id, pergunta, alternativas, alternativaCorreta, criador_id } = req.body;
+    const perguntaNova = Pergunta.build({ materia_id, elo_id, turma_id, escola_id, pergunta,criador_id });
 
     try {
         await perguntaNova.validate();

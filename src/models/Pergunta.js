@@ -45,6 +45,15 @@ const Pergunta = database.define('perguntas', {
     },
     onDelete: 'CASCADE',
   },
+  criador_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'usuarios',
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+  },
   pergunta: {
     type: DataTypes.TEXT,
     allowNull: false,

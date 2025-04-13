@@ -66,6 +66,9 @@ Pergunta.belongsTo(Turma, { foreignKey: 'turma_id', as: 'turma' });
 Elo.hasMany(Pergunta, { foreignKey: 'elo_id', as: 'perguntas' });
 Pergunta.belongsTo(Elo, { foreignKey: 'elo_id', as: 'elo' });
 
+Usuario.hasMany(Pergunta, { foreignKey: 'criador_id', as: 'perguntas' });
+Pergunta.belongsTo(Usuario, { foreignKey: 'criador_id', as: 'criador' });
+
 // Escola e Pergunta
 Escola.hasMany(Pergunta, { foreignKey: 'escola_id', as: 'perguntas' });
 Pergunta.belongsTo(Escola, { foreignKey: 'escola_id', as: 'escola' });

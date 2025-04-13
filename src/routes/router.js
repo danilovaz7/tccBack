@@ -68,7 +68,8 @@ router.post('/sala',salasController.createSala)
 router.get('/sala/:codigo',salasController.getSalaById)
 router.get('/sala-alunos/:id',salasController.getAlunoSala)
 router.post('/entrar/sala',salasController.entrarSala)
-router.get('/sala/:salaId/perguntas/:eloId/:turmaId/:idMateria1/:idMateria2/:idMateria3',salasController.getPerguntasQuizMateria)
+router.get('/sala/:salaId/perguntas/:eloId/:turmaId/:idMateria1/:idMateria2/:idMateria3',salasController.getPerguntasQuizMaterias)
+router.get('/sala/:salaId/perguntas/:eloId/:turmaId/:nmMateria',salasController.getPerguntasQuizMateria)
 router.put('/sala/:codigo', salasController.updateSala)
 router.post('/sala/resposta-aluno', salasController.criarSalaAlunoResposta);
 

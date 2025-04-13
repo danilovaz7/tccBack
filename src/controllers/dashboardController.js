@@ -1,15 +1,14 @@
-import { Op } from 'sequelize';
+import { Op, fn, col } from 'sequelize';
 import sequelize from '../db/database.js';
 import Usuario from '../models/Usuario.js';
-import Materia from "../models/Materia.js";
-import Pergunta from "../models/Pergunta.js";
-import SalaPergunta from "../models/SalaPergunta.js";
-import SalaAlunoResposta from "../models/SalaAlunoResposta.js";
-import Alternativa from "../models/alternativa.js";
-import Sala from "../models/Sala.js";
-import SalaAluno from "../models/SalaAluno.js";
+import Materia from '../models/Materia.js';
+import Pergunta from '../models/Pergunta.js';
+import SalaPergunta from '../models/SalaPergunta.js';
+import SalaAlunoResposta from '../models/SalaAlunoResposta.js';
+import Alternativa from '../models/Alternativa.js';
+import Sala from '../models/Sala.js';
+import SalaAluno from '../models/SalaAluno.js';
 
-// Define o intervalo de datas
 function getDateRange(month) {
   let startDate, endDate;
   if (month) {
@@ -24,13 +23,13 @@ function getDateRange(month) {
 }
 
 async function getDashboardStats(req, res) {
-  const { id } = req.params;  // id do usuário, via rota, para filtrar pela escola dele
+  const { id } = req.params;  // id do usuário para filtrar pela escola dele
   const { month } = req.query;
   const { startDate, endDate } = getDateRange(month);
   console.log('Dashboard stats from:', startDate, 'to:', endDate);
 
   try {
-    // 1. Buscar o usuário e obter seu id_escola
+    // 1. Buscar o usuário para obter seu id_escola
     const usuario = await Usuario.findByPk(id);
     if (!usuario) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
@@ -38,12 +37,12 @@ async function getDashboardStats(req, res) {
     const id_escola = usuario.id_escola;
     console.log(`Calculando estatísticas para a escola: ${id_escola}`);
 
-    // 2. Matéria com mais respostas INCORRETAS
+    // 2. Matéria com mais respostas erradas
     const materiaErrada = await Materia.findOne({
       attributes: [
         'id',
         'nome',
-        [sequelize.fn('COUNT', sequelize.col('perguntas.sala_perguntas.aluno_respostas.id')), 'wrongCount']
+        [fn('COUNT', col('perguntas.sala_perguntas.aluno_respostas.id')), 'wrongCount']
       ],
       include: [{
         model: Pergunta,
@@ -61,9 +60,7 @@ async function getDashboardStats(req, res) {
             as: 'aluno_respostas',
             required: true,
             attributes: [],
-            where: {
-              createdAt: { [Op.between]: [startDate, endDate] }
-            },
+            where: { createdAt: { [Op.between]: [startDate, endDate] } },
             include: [{
               model: Alternativa,
               as: 'alternativa',
@@ -79,12 +76,12 @@ async function getDashboardStats(req, res) {
       subQuery: false
     });
     
-    // 3. Matéria com mais respostas CORRETAS
+    // 3. Matéria com mais respostas corretas
     const materiaCerta = await Materia.findOne({
       attributes: [
         'id',
         'nome',
-        [sequelize.fn('COUNT', sequelize.col('perguntas.sala_perguntas.aluno_respostas.id')), 'correctCount']
+        [fn('COUNT', col('perguntas.sala_perguntas.aluno_respostas.id')), 'correctCount']
       ],
       include: [{
         model: Pergunta,
@@ -118,74 +115,88 @@ async function getDashboardStats(req, res) {
       subQuery: false
     });
     
-    // 4. Pergunta com mais respostas INCORRETAS (apenas da escola do usuário)
+    // 4. Pergunta com mais respostas erradas
     const perguntaErrada = await Pergunta.findOne({
       where: { escola_id: id_escola },
       attributes: [
         'id',
         'pergunta',
-        [sequelize.fn('COUNT', sequelize.col('sala_perguntas.aluno_respostas.id')), 'wrongCount']
+        [fn('COUNT', col('sala_perguntas.aluno_respostas.id')), 'wrongCount']
       ],
-      include: [{
-        model: SalaPergunta,
-        as: 'sala_perguntas',
-        required: true,
-        attributes: [],
-        include: [{
-          model: SalaAlunoResposta,
-          as: 'aluno_respostas',
+      include: [
+        {
+          model: SalaPergunta,
+          as: 'sala_perguntas',
           required: true,
           attributes: [],
-          where: { createdAt: { [Op.between]: [startDate, endDate] } },
           include: [{
-            model: Alternativa,
-            as: 'alternativa',
+            model: SalaAlunoResposta,
+            as: 'aluno_respostas',
             required: true,
             attributes: [],
-            where: { correta: false }
+            where: { createdAt: { [Op.between]: [startDate, endDate] } },
+            include: [{
+              model: Alternativa,
+              as: 'alternativa',
+              required: true,
+              attributes: [],
+              where: { correta: false }
+            }]
           }]
-        }]
-      }],
-      group: ['perguntas.id', 'perguntas.pergunta'],
+        },
+        {
+          model: Materia,
+          as: 'materia',
+          attributes: ['id', 'nome']
+        }
+      ],
+      group: ['perguntas.id', 'perguntas.pergunta', 'materia.id'],
       order: [[sequelize.literal('wrongCount'), 'DESC']],
       subQuery: false
     });
     
-    // 5. Pergunta com mais respostas CORRETAS (apenas da escola do usuário)
+    // 5. Pergunta com mais respostas corretas
     const perguntaCerta = await Pergunta.findOne({
       where: { escola_id: id_escola },
       attributes: [
         'id',
         'pergunta',
-        [sequelize.fn('COUNT', sequelize.col('sala_perguntas.aluno_respostas.id')), 'correctCount']
+        [fn('COUNT', col('sala_perguntas.aluno_respostas.id')), 'correctCount']
       ],
-      include: [{
-        model: SalaPergunta,
-        as: 'sala_perguntas',
-        required: true,
-        attributes: [],
-        include: [{
-          model: SalaAlunoResposta,
-          as: 'aluno_respostas',
+      include: [
+        {
+          model: SalaPergunta,
+          as: 'sala_perguntas',
           required: true,
           attributes: [],
-          where: { createdAt: { [Op.between]: [startDate, endDate] } },
           include: [{
-            model: Alternativa,
-            as: 'alternativa',
+            model: SalaAlunoResposta,
+            as: 'aluno_respostas',
             required: true,
             attributes: [],
-            where: { correta: true }
+            where: { createdAt: { [Op.between]: [startDate, endDate] } },
+            include: [{
+              model: Alternativa,
+              as: 'alternativa',
+              required: true,
+              attributes: [],
+              where: { correta: true }
+            }]
           }]
-        }]
-      }],
-      group: ['perguntas.id', 'perguntas.pergunta'],
+        },
+        {
+          model: Materia,
+          as: 'materia',
+          attributes: ['id', 'nome']
+        }
+      ],
+      group: ['perguntas.id', 'perguntas.pergunta', 'materia.id'],
       order: [[sequelize.literal('correctCount'), 'DESC']],
       subQuery: false
     });
     
-    // 6. Quantidade de salas encerradas (só salas cujo host pertence à mesma escola)
-    const closedSalas = await Sala.count({
+    // 6. Salas encerradas agrupadas por tipo (online e offline)
+    const salasEncerradasGrouped = await Sala.findAll({
       where: {
         status: 'encerrada',
         createdAt: { [Op.between]: [startDate, endDate] }
@@ -194,80 +205,131 @@ async function getDashboardStats(req, res) {
         model: Usuario,
         as: 'host',
         required: true,
-        where: { id_escola }
-      }]
+        where: { id_escola },
+        attributes: []
+      }],
+      attributes: [
+        'tipo',
+        [fn('COUNT', col('salas.id')), 'count']
+      ],
+      group: ['tipo']
+    });
+    const salasEncerradas = { online: 0, offline: 0 };
+    salasEncerradasGrouped.forEach(item => {
+      const tipo = item.get('tipo');
+      const count = Number(item.get('count'));
+      if (tipo) {
+        const tipoLower = tipo.toLowerCase();
+        if (tipoLower === 'online' || tipoLower === 'offline') {
+          salasEncerradas[tipoLower] = count;
+        }
+      }
     });
     
-    // 7. Média de alunos por sala (apenas salas com host da mesma escola)
+    // 7. Média de alunos por sala (apenas salas cujo host pertence à mesma escola)
     const salas = await Sala.findAll({
       where: { createdAt: { [Op.between]: [startDate, endDate] } },
       include: [
-        {
-          model: Usuario,
-          as: 'host',
-          required: true,
-          where: { id_escola }
-        },
-        {
-          model: SalaAluno,
-          as: 'alunosConectados',
-          attributes: []
-        }
+        { model: Usuario, as: 'host', required: true, where: { id_escola }, attributes: [] },
+        { model: SalaAluno, as: 'alunosConectados', attributes: [] }
       ],
       attributes: [
         'id',
-        [sequelize.fn('COUNT', sequelize.col('alunosConectados.id')), 'studentCount']
+        [fn('COUNT', col('alunosConectados.id')), 'studentCount']
       ],
       group: ['salas.id']
     });
-    
-    const totalStudents = salas.reduce((sum, sala) => {
-      const countValue = Number(sala.get('studentCount')) || 0;
-      return sum + countValue;
-    }, 0);
+    const totalStudents = salas.reduce((sum, sala) => sum + Number(sala.get('studentCount') || 0), 0);
     const avgStudents = salas.length ? totalStudents / salas.length : 0;
     
-    // 8. Total de respostas enviadas (só respostas de perguntas cuja escola seja a do usuário)
+    // 8. Total de respostas enviadas (apenas respostas de perguntas cuja escola seja a mesma)
     const totalRespostas = await SalaAlunoResposta.count({
-      where: {
-        createdAt: { [Op.between]: [startDate, endDate] },
-        '$sala_pergunta.pergunta.escola_id$': id_escola,
-        '$aluno.usuario.id_escola$': id_escola
-      },
+      where: { createdAt: { [Op.between]: [startDate, endDate] } },
       include: [
         {
           model: SalaPergunta,
-          as: 'sala_pergunta', // associação definida: SalaAlunoResposta.belongsTo(SalaPergunta, { as: 'sala_pergunta' })
+          as: 'sala_pergunta',
           required: true,
           include: [{
             model: Pergunta,
-            as: 'pergunta', // associação definida: SalaPergunta.belongsTo(Pergunta, { as: 'pergunta' })
+            as: 'pergunta',
             required: true,
+            where: { escola_id: id_escola },
             attributes: []
           }]
         },
         {
           model: SalaAluno,
-          as: 'aluno', // associação definida: SalaAlunoResposta.belongsTo(SalaAluno, { as: 'aluno' })
+          as: 'aluno',
           required: true,
           include: [{
             model: Usuario,
-            as: 'usuario', // associação definida: SalaAluno.belongsTo(Usuario, { as: 'usuario' })
+            as: 'usuario',
             required: true,
+            where: { id_escola },
             attributes: []
           }]
         }
       ]
     });
     
+    // 9. Ranking por Turma: os 3 alunos que mais erraram (considerando respostas erradas)
+    const wrongAnswers = await SalaAlunoResposta.findAll({
+      where: { createdAt: { [Op.between]: [startDate, endDate] } },
+      include: [
+        {
+          model: Alternativa,
+          as: 'alternativa',
+          required: true,
+          where: { correta: false },
+          attributes: []
+        },
+        {
+          model: SalaAluno,
+          as: 'aluno',
+          required: true,
+          attributes: ['usuario_id'],
+          include: [{
+            model: Usuario,
+            as: 'usuario',
+            required: true,
+            where: { id_escola },
+            attributes: ['id', 'nome', 'id_turma']
+          }]
+        }
+      ],
+      attributes: [
+        [fn('COUNT', col('sala_aluno_respostas.id')), 'wrongCount']
+      ],
+      group: ['aluno.usuario.id', 'aluno.usuario.nome', 'aluno.usuario.id_turma'],
+      raw: true,
+      nest: true
+    });
+    const rankingByTurma = {};
+    wrongAnswers.forEach(item => {
+      const turma = item.aluno?.usuario?.id_turma;
+      if (!turma) return;
+      if (!rankingByTurma[turma]) rankingByTurma[turma] = [];
+      rankingByTurma[turma].push({
+        id: item.aluno.usuario.id,
+        nome: item.aluno.usuario.nome,
+        wrongCount: Number(item.wrongCount)
+      });
+    });
+    Object.keys(rankingByTurma).forEach(turma => {
+      rankingByTurma[turma].sort((a, b) => b.wrongCount - a.wrongCount);
+      rankingByTurma[turma] = rankingByTurma[turma].slice(0, 3);
+    });
+    
     return res.json({
-      materiaComMaisRespostasErradas: materiaErrada ? materiaErrada.toJSON() : null,
-      materiaComMaisRespostasCorretas: materiaCerta ? materiaCerta.toJSON() : null,
-      perguntaMaisErrada: perguntaErrada ? perguntaErrada.toJSON() : null,
-      perguntaMaisCerta: perguntaCerta ? perguntaCerta.toJSON() : null,
-      salasEncerradas: closedSalas,
+      materiaComMaisRespostasErradas: materiaErrada,
+      materiaComMaisRespostasCorretas: materiaCerta,
+      perguntaMaisErrada: perguntaErrada,
+      perguntaMaisCerta: perguntaCerta,
+      salasEncerradas,       // Ex: { online: x, offline: y }
       mediaAlunosPorSala: avgStudents,
-      totalRespostas
+      totalRespostas,
+      rankingPorTurma: rankingByTurma
     });
     
   } catch (error) {

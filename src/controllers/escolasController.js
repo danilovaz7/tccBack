@@ -3,11 +3,11 @@ import Escola from "../models/Escola.js"
 
 async function createEscola(req, res) {
     console.log('entrei no criar escola')
-    const { nome } = req.body
-    console.log('nome', nome)
+    const { nome, cnpj } = req.body
+   
 
-    const escola = Escola.build({ nome })
-    console.log(escola)
+    const escola = Escola.build({ nome, cnpj })
+    
     try {
         await escola.validate()
     } catch (error) {

@@ -9,11 +9,11 @@ import SalaAlunoResposta from "../models/SalaAlunoResposta.js"
 import { io } from '../app.js';
 
 export async function createSala(req, res) {
-    const { codigo, id_host } = req.body;
+    const { codigo, id_host, tipo } = req.body;
    
 
     try {
-        const sala = Sala.build({ codigo, host_id: id_host });
+        const sala = Sala.build({ codigo, host_id: id_host, tipo });
         await sala.validate();
         await sala.save();
        
@@ -111,7 +111,7 @@ export async function getSalaById(req, res) {
     }
 }
 
-async function getPerguntasQuizMateria(req, res) {
+async function getPerguntasQuizMaterias(req, res) {
     const { eloId, turmaId, idMateria1, idMateria2, idMateria3,salaId } = req.params;
    
     const sala_id = parseInt(salaId)
@@ -188,6 +188,58 @@ async function getPerguntasQuizMateria(req, res) {
     }
 }
 
+async function getPerguntasQuizMateria(req, res) {
+    const { eloId, turmaId, nmMateria,salaId } = req.params;
+   
+    const sala_id = parseInt(salaId)
+    const eloid = parseInt(eloId);
+    const turmaid = parseInt(turmaId);
+
+    const materia1 = await Materia.findOne({ where: { nome: nmMateria } });
+
+    if (!materia1) {
+        return res.status(404).json({ error: 'Uma ou mais matérias não foram encontradas' });
+    }
+
+    // Busca de perguntas para cada matéria
+    const perguntasMateria1 = await Pergunta.findAll({
+        where: {
+            materia_id: materia1.id,
+            elo_id: eloid,
+            turma_id: turmaid
+        },
+        include: ['alternativas'], 
+        limit: 6    
+    });
+    
+
+    const perguntasTotais = [
+        ...perguntasMateria1,
+    ];
+
+    if (perguntasTotais && perguntasTotais.length > 0) {
+        try {
+           
+            for (const pergunta of perguntasTotais) {
+                const salaPergunta = SalaPergunta.build({
+                    sala_id: sala_id,         
+                    pergunta_id: pergunta.id  
+                });
+            
+                await salaPergunta.validate();
+                await salaPergunta.save();
+            }
+        
+            return res.json(perguntasTotais);
+        } catch (error) {
+            console.error('Erro ao salvar sala_perguntas:', error);
+            return res.status(500).json({ error: 'Erro ao inserir relação sala-pergunta' });
+        }
+    } else {
+        return res.status(404).json({ error: 'Perguntas não encontradas' });
+    }
+}
+
 async function getAternativasPerguntaMateria(req, res) {
     const { id } = req.params
 
@@ -202,13 +254,7 @@ async function getAternativasPerguntaMateria(req, res) {
 
 async function criarSalaAlunoResposta(req, res) {
     const { sala_id, usuario_id, pergunta_id, resposta_id } = req.body;
-    console.log('deu certooooo')
-    console.log('sala_id',sala_id)
-    console.log('usuario_id',usuario_id)
-    console.log('pergunta_id',pergunta_id)
-    console.log('resposta_id',resposta_id)
-  
-   
+
     if (!sala_id || !usuario_id || !pergunta_id || !resposta_id) {
       return res.status(400).json({ error: 'É necessário enviar sala_id, usuario_id, pergunta_id e resposta_id' });
     }
@@ -288,6 +334,7 @@ export default {
     getAlunoSala,
     getSalaById,
     entrarSala,
+    getPerguntasQuizMaterias,
     getPerguntasQuizMateria,
     getAternativasPerguntaMateria,
     criarSalaAlunoResposta,
