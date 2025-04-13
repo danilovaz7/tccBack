@@ -6,6 +6,7 @@ import Materia from "../models/Materia.js"
 import SalaPergunta from "../models/SalaPergunta.js"   
 import SalaAlunoResposta from "../models/SalaAlunoResposta.js"
 
+import { Sequelize } from 'sequelize';
 import { io } from '../app.js';
 
 export async function createSala(req, res) {
@@ -33,51 +34,55 @@ export async function createSala(req, res) {
 }
 
 export async function entrarSala(req, res) {
-    const { codigo, id_aluno } = req.body;
+  const { codigo, id_aluno } = req.body;
 
-    try {
-        const sala = await Sala.findOne({ where: { codigo } });
-        
-        if (!sala) {
-            return res.status(404).json({ error: 'Sala não encontrada' });
-        }
-
-        if (sala.status === 'em andamento') {
-            return res.status(404).json({ error: 'Sala em andamento' });
-        }
-
-        if (sala.status === 'encerrada') {
-            return res.status(404).json({ error: 'Sala em encerrada' });
-        }
-
-       
-        let salaAluno = await SalaAluno.findOne({
-            where: { sala_id: sala.id, usuario_id: id_aluno }
-        });
-
-        
-        if (!salaAluno) {
-            salaAluno = SalaAluno.build({ sala_id: sala.id, usuario_id: id_aluno });
-            await salaAluno.validate();
-            await salaAluno.save();
-        }
-
-        const salaAlunos = await SalaAluno.findAll({
-            where: { sala_id: sala.id },
-            include: ['usuario']
-        });
-
-        io.to(sala.id).emit("atualizar_sala", {
-            alunosAtualizados: salaAlunos
-        });
-
-        return res.status(200).json({
-            salaAluno: salaAluno.toJSON()
-        });
-    } catch (error) {
-        return res.status(500).json({ error: 'Erro ao adicionar aluno à sala: ' + error.message });
+  try {
+    const sala = await Sala.findOne({ where: { codigo } });
+    
+    if (!sala) {
+      return res.status(404).json({ error: 'Sala não encontrada' });
     }
+
+    if (sala.status === 'em andamento') {
+      return res.status(404).json({ error: 'Sala em andamento' });
+    }
+
+    if (sala.status === 'encerrada') {
+      return res.status(404).json({ error: 'Sala encerrada' });
+    }
+
+    const totalAlunos = await SalaAluno.count({ where: { sala_id: sala.id } });
+    if (totalAlunos >= 5) {
+      return res.status(400).json({ error: 'A sala já atingiu o limite de 5 alunos.' });
+    }
+   
+    let salaAluno = await SalaAluno.findOne({
+      where: { sala_id: sala.id, usuario_id: id_aluno }
+    });
+
+    if (!salaAluno) {
+      salaAluno = SalaAluno.build({ sala_id: sala.id, usuario_id: id_aluno });
+      await salaAluno.validate();
+      await salaAluno.save();
+    }
+
+    const salaAlunos = await SalaAluno.findAll({
+      where: { sala_id: sala.id },
+      include: ['usuario']
+    });
+
+    io.to(sala.id).emit("atualizar_sala", {
+      alunosAtualizados: salaAlunos
+    });
+
+    return res.status(200).json({
+      salaAluno: salaAluno.toJSON()
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao adicionar aluno à sala: ' + error.message });
+  }
 }
+
 
 
 export async function getAlunoSala(req, res) {
@@ -111,82 +116,103 @@ export async function getSalaById(req, res) {
     }
 }
 
+
+
 async function getPerguntasQuizMaterias(req, res) {
-    const { eloId, turmaId, idMateria1, idMateria2, idMateria3,salaId } = req.params;
-   
-    const sala_id = parseInt(salaId)
+    const { eloId, turmaId, idMateria1, idMateria2, idMateria3, salaId } = req.params;
+    
+    console.log(eloId, turmaId, idMateria1, idMateria2, idMateria3, salaId)
+
+    const sala_id = parseInt(salaId);
     const eloid = parseInt(eloId);
     const turmaid = parseInt(turmaId);
     const id1 = parseInt(idMateria1);
     const id2 = parseInt(idMateria2);
     const id3 = parseInt(idMateria3);
 
-    // Supondo que os modelos Materia e Pergunta já foram importados corretamente
+    console.log('typeof(sala_id)',typeof(sala_id))
+    console.log('typeof(eloid)',typeof(eloid))
+    console.log('typeof(turmaid)',typeof(turmaid))
+    console.log('typeof(id1)',typeof(id1))
+    console.log('typeof(id2)',typeof(id2))
+    console.log('typeof(id3)',typeof(id3))
+
+    console.log(eloid,turmaid,id1,id2,id3,sala_id)
+  
+    // Verifica se os IDs são únicos
+    if (new Set([id1, id2, id3]).size < 3) {
+      return res.status(400).json({ error: 'As matérias selecionadas devem ser diferentes.' });
+    }
+  
     const materia1 = await Materia.findOne({ where: { id: id1 } });
     const materia2 = await Materia.findOne({ where: { id: id2 } });
     const materia3 = await Materia.findOne({ where: { id: id3 } });
-
+  
     if (!materia1 || !materia2 || !materia3) {
-        return res.status(404).json({ error: 'Uma ou mais matérias não foram encontradas' });
+      return res.status(404).json({ error: 'Uma ou mais matérias não foram encontradas' });
     }
-
-    // Busca de perguntas para cada matéria
+  
+    const randomOrder = Sequelize.literal('rand()'); 
     const perguntasMateria1 = await Pergunta.findAll({
-        where: {
-            materia_id: materia1.id,
-            elo_id: eloid,
-            turma_id: turmaid
-        },
-        include: ['alternativas'], 
-        limit: 4    
+      where: {
+        materia_id: materia1.id,
+        elo_id: eloid,
+        turma_id: turmaid
+      },
+      include: ['alternativas'],
+      order: randomOrder,
+      limit: 4    
     });
+  
     const perguntasMateria2 = await Pergunta.findAll({
-        where: {
-            materia_id: materia2.id,
-            elo_id: eloid,
-            turma_id: turmaid
-        },
-        include: ['alternativas'], 
-        limit: 4
+      where: {
+        materia_id: materia2.id,
+        elo_id: eloid,
+        turma_id: turmaid
+      },
+      include: ['alternativas'],
+      order: randomOrder,
+      limit: 4
     });
+  
     const perguntasMateria3 = await Pergunta.findAll({
-        where: {
-            materia_id: materia3.id,
-            elo_id: eloid,
-            turma_id: turmaid
-        },
-        include: ['alternativas'], 
-        limit: 4
+      where: {
+        materia_id: materia3.id,
+        elo_id: eloid,
+        turma_id: turmaid
+      },
+      include: ['alternativas'],
+      order: randomOrder,
+      limit: 4
     });
-
+  
     const perguntasTotais = [
-        ...perguntasMateria1,
-        ...perguntasMateria2,
-        ...perguntasMateria3
+      ...perguntasMateria1,
+      ...perguntasMateria2,
+      ...perguntasMateria3
     ];
-
+  
     if (perguntasTotais && perguntasTotais.length > 0) {
-        try {
-            // Percorre cada pergunta e insere um registro na tabela SalaPergunta usando build, validate e save
-            for (const pergunta of perguntasTotais) {
-                const salaPergunta = SalaPergunta.build({
-                    sala_id: sala_id,         // vindo do req.body
-                    pergunta_id: pergunta.id  // id da pergunta selecionada
-                });
-            
-                await salaPergunta.validate();
-                await salaPergunta.save();
-            }
-        
-            return res.json(perguntasTotais);
-        } catch (error) {
-            console.error('Erro ao salvar sala_perguntas:', error);
-            return res.status(500).json({ error: 'Erro ao inserir relação sala-pergunta' });
+      try {
+        for (const pergunta of perguntasTotais) {
+          const salaPergunta = SalaPergunta.build({
+            sala_id: sala_id,
+            pergunta_id: pergunta.id
+          });
+  
+          await salaPergunta.validate();
+          await salaPergunta.save();
         }
+        return res.json(perguntasTotais);
+      } catch (error) {
+        console.error('Erro ao salvar sala_perguntas:', error);
+        return res.status(500).json({ error: 'Erro ao inserir relação sala-pergunta' });
+      }
     } else {
-        return res.status(404).json({ error: 'Perguntas não encontradas' });
+      return res.status(404).json({ error: 'Perguntas não encontradas' });
     }
-}
+  }
+
 
 async function getPerguntasQuizMateria(req, res) {
     const { eloId, turmaId, nmMateria,salaId } = req.params;
