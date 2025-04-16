@@ -34,14 +34,14 @@ const usersInRoom = {};       // usersInRoom[roomId] = [ { userId, userName }, .
 io.on("connection", (socket) => {
   console.log(`Novo cliente conectado: ${socket.id}`);
 
-  socket.on("joinRoom", ({ roomId, userId, userName,lvl }) => {
+  socket.on("joinRoom", ({ roomId, userId, userName, lvl }) => {
     if (!roomId || !userId || !userName) return;
     socket.join(roomId);
     if (!usersInRoom[roomId]) {
       usersInRoom[roomId] = [];
     }
     if (!usersInRoom[roomId].find(u => u.userId === userId)) {
-      usersInRoom[roomId].push({ userId, userName,lvl });
+      usersInRoom[roomId].push({ userId, userName, lvl });
     }
     console.log(`Usuário ${userName} (ID: ${userId}) entrou na sala ${roomId}`);
     io.to(roomId).emit("playersUpdated", usersInRoom[roomId]);
@@ -124,35 +124,34 @@ io.on("connection", (socket) => {
     }
   });
 
-// Evento para o host iniciar a próxima pergunta
-socket.on("nextQuestion", ({ roomId }) => {
-  const quiz = roomQuiz[roomId];
-  if (!quiz) return;
+  // Evento para o host iniciar a próxima pergunta (mantido como fallback, se necessário)
+  socket.on("nextQuestion", ({ roomId }) => {
+    const quiz = roomQuiz[roomId];
+    if (!quiz) return;
 
-  // Avança para a próxima pergunta
-  quiz.indice++;
+    // Avança para a próxima pergunta
+    quiz.indice++;
 
-  // Verifica se ainda há perguntas restantes
-  if (quiz.indice < quiz.perguntas.length) {
-    startQuestion(roomId); // Reinicia o ciclo da próxima pergunta
-  } else {
-    // Todas as perguntas foram respondidas, finalizar o quiz
-    const finalScoreboard = Object.keys(quiz.scores).map(userId => {
-      const user = usersInRoom[roomId]?.find(u => u.userId === parseInt(userId));
-      return {
-        userId: parseInt(userId),
-        userName: user ? user.userName : "Desconhecido",
-        pontos: quiz.scores[userId],
-      };
-    });
+    // Verifica se ainda há perguntas restantes
+    if (quiz.indice < quiz.perguntas.length) {
+      startQuestion(roomId); // Reinicia o ciclo da próxima pergunta
+    } else {
+      // Todas as perguntas foram respondidas, finalizar o quiz
+      const finalScoreboard = Object.keys(quiz.scores).map(userId => {
+        const user = usersInRoom[roomId]?.find(u => u.userId === parseInt(userId));
+        return {
+          userId: parseInt(userId),
+          userName: user ? user.userName : "Desconhecido",
+          pontos: quiz.scores[userId],
+        };
+      });
 
-    finalScoreboard.sort((a, b) => b.pontos - a.pontos);
-    const vencedorFinal = finalScoreboard[0]?.userId || "Nenhum";
+      finalScoreboard.sort((a, b) => b.pontos - a.pontos);
+      const vencedorFinal = finalScoreboard[0]?.userId || "Nenhum";
 
-    io.to(roomId).emit("quizFinalizado", { scoreboard: finalScoreboard, vencedorFinal });
-  }
-});
-
+      io.to(roomId).emit("quizFinalizado", { scoreboard: finalScoreboard, vencedorFinal });
+    }
+  });
 
   socket.on("disconnect", () => {
     console.log(`Cliente ${socket.id} desconectado`);
@@ -166,7 +165,7 @@ socket.on("nextQuestion", ({ roomId }) => {
   });
 });
 
-// Função para iniciar a pergunta atual com timer fixo de 10 segundos
+// Função para iniciar a pergunta atual com timer fixo de 10 segundos e descanso automático de 5 segundos
 function startQuestion(roomId) {
   const quiz = roomQuiz[roomId];
   if (!quiz) return;
@@ -174,32 +173,30 @@ function startQuestion(roomId) {
   const pergunta = quiz.perguntas[quiz.indice];
   if (!pergunta) return;
 
-  // Reinicia os dados da pergunta
+  // Reinicia dados da pergunta
   quiz.questionStartTime = Date.now();
   quiz.fastestTime = Infinity;
   quiz.currentWinner = null;
   quiz.answeredUsers = new Set();
 
-  // Inicializa o tempo restante
   let remainingTime = 10;
 
-  // Envia a pergunta inicial junto com o tempo
+  // Envia a pergunta com o timer inicial de 10 segundos
   io.to(roomId).emit("startQuestion", { pergunta, tempo: remainingTime });
 
-  // Atualização do timer para decremento correto
+  // Atualiza o timer a cada segundo
   quiz.timerInterval = setInterval(() => {
-    remainingTime--; 
+    remainingTime--;
     if (remainingTime >= 0) {
-      // Emite o tempo atualizado para o front-end
       io.to(roomId).emit("updateTimer", { remainingTime });
     } else {
-      // Interrompe o timer ao atingir 0
       clearInterval(quiz.timerInterval);
     }
   }, 1000);
 
-  // Após o término do timer (10 segundos), emite o resultado da pergunta
+  // Quando os 10 segundos se esgotam:
   quiz.timerTimeout = setTimeout(() => {
+    // Monta o placar da rodada
     const scoreboard = Object.keys(quiz.scores).map(userId => {
       const user = usersInRoom[roomId]?.find(u => u.userId === parseInt(userId));
       return {
@@ -209,15 +206,35 @@ function startQuestion(roomId) {
       };
     });
 
+    // Emite o resultado da pergunta
     io.to(roomId).emit("resultadoPergunta", {
       vencedor: quiz.currentWinner || 'ninguém',
       respostaCorreta: pergunta.respostaCorreta,
       scoreboard,
     });
-  }, 10000);
+
+    // Inicia o timer de descanso de 5 segundos
+    setTimeout(() => {
+      quiz.indice++;
+      if (quiz.indice < quiz.perguntas.length) {
+        startQuestion(roomId); // nova pergunta
+      } else {
+        // Finaliza o quiz se não houver mais perguntas
+        const finalScoreboard = Object.keys(quiz.scores).map(userId => {
+          const user = usersInRoom[roomId]?.find(u => u.userId === parseInt(userId));
+          return {
+            userId: parseInt(userId),
+            userName: user ? user.userName : "Desconhecido",
+            pontos: quiz.scores[userId],
+          };
+        });
+        finalScoreboard.sort((a, b) => b.pontos - a.pontos);
+        const vencedorFinal = finalScoreboard[0]?.userId || "Nenhum";
+        io.to(roomId).emit("quizFinalizado", { scoreboard: finalScoreboard, vencedorFinal });
+      }
+    }, 5000); // 5 segundos de descanso
+  }, 10000); // 10 segundos de pergunta
 }
-
-
 
 server.listen(process.env.APP_PORT, () => {
   console.log(`O servidor está escutando na porta ${process.env.APP_PORT}`);

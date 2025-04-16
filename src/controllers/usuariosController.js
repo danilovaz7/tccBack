@@ -6,6 +6,8 @@ import TipoUsuario from "../models/TipoUsuario.js";
 import SalaAluno from "../models/SalaAluno.js";
 import Sala from "../models/Sala.js";
 import generator from "generate-password";
+import bcrypt from 'bcryptjs';
+
 
 export function generateRandomPassword() {
     return generator.generate({
@@ -19,7 +21,8 @@ export function generateRandomPassword() {
 
 async function createUser(req, res) {
     const { nome, email, matricula, experiencia, nivel, id_avatar, tipo_usuario_id, id_materia,id_escola, id_turma, genero } = req.body;
-    const senha = generateRandomPassword();
+    const senhaRandom = generateRandomPassword();
+    const senha = await bcrypt.hash(senhaRandom, 10);
 
     const usuario = Usuario.build({ nome, email, senha, matricula, id_materia,experiencia, id_turma, id_avatar, id_escola, nivel, tipo_usuario_id, genero });
     console.log(usuario)
@@ -181,7 +184,10 @@ async function updateUser(req, res) {
 
     if (nome) usuario.nome = nome
     if (email) usuario.email = email
-    if (senha) usuario.senha = senha
+    if (senha) {
+      const senhaCriptografada = await bcrypt.hash(senha, 10);
+      usuario.senha = senhaCriptografada;
+    }
     if (matricula) usuario.matricula = matricula
     if (experiencia) usuario.experiencia = experiencia
     if (nivel) usuario.nivel = nivel
