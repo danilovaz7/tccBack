@@ -125,7 +125,6 @@ router.post('/forgot-password', async (req, res) => {
   
       const token = jwt.sign({ userId: usuario.id },  process.env.SECRET_KEY, { expiresIn: '1h' });
   
-      // Envia o link de recuperação de senha para o e-mail
       const resetLink = `http://localhost:5173/redefinir-senha/${token}`;
       const mailOptions = {
         from: 'equipeplay2learn@gmail.com',
