@@ -123,7 +123,6 @@ router.post('/forgot-password', async (req, res) => {
         return res.status(404).json({ message: 'Usuário não encontrado.' });
       }
   
-      // Cria um token de recuperação de senha
       const token = jwt.sign({ userId: usuario.id },  process.env.SECRET_KEY, { expiresIn: '1h' });
   
       // Envia o link de recuperação de senha para o e-mail
