@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 export async function authenticate(req, res, next) {
   const header = req.headers.authorization;
   const [, token] = header.split(" ")
-  
+  console.log(token)
   // Se não houver token, retorna 403
   if (!token) {
     return res.status(403).json({ message: "Forbidden", error: "Token is missing" });
