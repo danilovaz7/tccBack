@@ -26,7 +26,7 @@ async function createUser(req, res) {
   const senha = await bcrypt.hash(senhaRandom, 10);
 
   const usuario = Usuario.build({ nome, email, senha, matricula, id_materia, experiencia, id_turma, id_avatar, id_escola, nivel, tipo_usuario_id, genero });
-  console.log(usuario)
+ 
   try {
     await usuario.validate();
   } catch (error) {

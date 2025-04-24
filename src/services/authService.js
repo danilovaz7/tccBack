@@ -2,9 +2,10 @@
 import jwt from 'jsonwebtoken';
 
 export async function authenticate(req, res, next) {
-  // Obtenha o token do cookie
-  const token = req.cookies.token;
 
+  const header = req.headers.authorization;
+  const [, token] = header.split(" ")
+  
   // Se não houver token, retorna 403
   if (!token) {
     return res.status(403).json({ message: "Forbidden", error: "Token is missing" });

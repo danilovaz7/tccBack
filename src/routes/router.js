@@ -21,57 +21,57 @@ import dashboardController from '../controllers/dashboardController.js';
 
 const router = Router()
 
-router.post('/usuarios',usuariosController.createUser)
-router.get('/usuarios',usuariosController.getUsers)
-router.get('/usuarios/:id',usuariosController.getUserById)
-router.put('/usuarios/:id', usuariosController.updateUser)
-router.delete('/usuarios/:id',usuariosController.deleteUser)
-router.get('/estatisticas/:id',estatisticasController.getEstatisticasByUser)
+router.post('/usuarios', usuariosController.createUser)
+router.get('/usuarios',authenticate, usuariosController.getUsers)
+router.get('/usuarios/:id', authenticate,usuariosController.getUserById)
+router.put('/usuarios/:id', authenticate, usuariosController.updateUser)
+router.delete('/usuarios/:id', authenticate,usuariosController.deleteUser)
+router.get('/estatisticas/:id', authenticate,estatisticasController.getEstatisticasByUser)
 
-router.get('/cargos',usuariosController.getTipoUsuarios)
+router.get('/cargos', authenticate,usuariosController.getTipoUsuarios)
 
-router.put('/usuarios/:id/atualizaexperiencia', nivelController.adicionarXp)
+router.put('/usuarios/:id/atualizaexperiencia', authenticate, nivelController.adicionarXp)
 
-router.post('/tipos',tiposController.createType)
-router.get('/tipos',tiposController.getTypes)
-router.get('/tipos/:id',tiposController.getTypeById)
-router.put('/tipos/:id', tiposController.updateType)
-router.delete('/tipos/:id',tiposController.deleteType)
+router.post('/tipos', authenticate,tiposController.createType)
+router.get('/tipos', authenticate,tiposController.getTypes)
+router.get('/tipos/:id', authenticate,tiposController.getTypeById)
+router.put('/tipos/:id', authenticate, tiposController.updateType)
+router.delete('/tipos/:id', authenticate,tiposController.deleteType)
 
-router.post('/materias',materiasController.createMateria)
-router.get('/materias',materiasController.getMaterias)
-router.get('/materias/:id',materiasController.getMateriaById)
-router.put('/materias/:id', materiasController.updateMateria)
-router.delete('/materias/:id',materiasController.deleteMateria)
-router.get('/eloMaterias/:id',materiasController.getEloMateriasByUser)
-router.get('/eloMaterias/materias/:materia_id',materiasController.getEloMaterias)
-router.get('/eloMaterias/:id/materia/:nmMateria',materiasController.getEloMateriasByUserAndMateria)
-router.put('/eloMaterias/:id/materia/:nmMateria', materiasController.updateEloMateria)
+router.post('/materias', authenticate,materiasController.createMateria)
+router.get('/materias', authenticate,materiasController.getMaterias)
+router.get('/materias/:id', authenticate,materiasController.getMateriaById)
+router.put('/materias/:id', authenticate, materiasController.updateMateria)
+router.delete('/materias/:id', authenticate,materiasController.deleteMateria)
+router.get('/eloMaterias/:id', authenticate,materiasController.getEloMateriasByUser)
+router.get('/eloMaterias/materias/:materia_id', authenticate,materiasController.getEloMaterias)
+router.get('/eloMaterias/:id/materia/:nmMateria', authenticate,materiasController.getEloMateriasByUserAndMateria)
+router.put('/eloMaterias/:id/materia/:nmMateria', authenticate, materiasController.updateEloMateria)
 
-router.post('/criar-pergunta',materiasController.createPergunta)
+router.post('/criar-pergunta', authenticate,materiasController.createPergunta)
 
-router.get('/materias/:materia_id/perguntas/escola/:escola_id/turma/:id_turma', materiasController.getPerguntasAllMateria);
+router.get('/materias/:materia_id/perguntas/escola/:escola_id/turma/:id_turma', authenticate, materiasController.getPerguntasAllMateria);
 
-router.get('/materias/:nmMateria/perguntas/:eloid/:turmaId', materiasController.getPerguntasQuizMateria);
-router.get('/materias/perguntas/:id/alternativas',materiasController.getAternativasPerguntaMateria)
+router.get('/materias/:nmMateria/perguntas/:eloid/:turmaId', authenticate, materiasController.getPerguntasQuizMateria);
+router.get('/materias/perguntas/:id/alternativas', authenticate,materiasController.getAternativasPerguntaMateria)
 
-router.get('/avatares',avataresController.getAvatares)
+router.get('/avatares', authenticate,avataresController.getAvatares)
 
-router.post('/criar-escola',escolasController.createEscola)
-router.get('/escolas',escolasController.getEscolas)
+router.post('/criar-escola', authenticate,escolasController.createEscola)
+router.get('/escolas', authenticate,escolasController.getEscolas)
 
-router.get('/turmas',turmasController.getTurmas)
+router.get('/turmas', authenticate,turmasController.getTurmas)
 
-router.get('/escola/:id/dashboard', dashboardController.getDashboardStats);
+router.get('/escola/:id/dashboard', authenticate, dashboardController.getDashboardStats);
 
-router.post('/sala',salasController.createSala)
-router.get('/sala/:codigo',salasController.getSalaById)
-router.get('/sala-alunos/:id',salasController.getAlunoSala)
-router.post('/entrar/sala',salasController.entrarSala)
-router.get('/sala/:salaId/perguntas/:eloId/:turmaId/:idMateria1/:idMateria2/:idMateria3',salasController.getPerguntasQuizMaterias)
-router.get('/sala/:salaId/perguntas/:eloId/:turmaId/:nmMateria',salasController.getPerguntasQuizMateria)
-router.put('/sala/:codigo', salasController.updateSala)
-router.post('/sala/resposta-aluno', salasController.criarSalaAlunoResposta);
+router.post('/sala', authenticate,salasController.createSala)
+router.get('/sala/:codigo', authenticate,salasController.getSalaById)
+router.get('/sala-alunos/:id', authenticate,salasController.getAlunoSala)
+router.post('/entrar/sala', authenticate,salasController.entrarSala)
+router.get('/sala/:salaId/perguntas/:eloId/:turmaId/:idMateria1/:idMateria2/:idMateria3', authenticate,salasController.getPerguntasQuizMaterias)
+router.get('/sala/:salaId/perguntas/:eloId/:turmaId/:nmMateria', authenticate,salasController.getPerguntasQuizMateria)
+router.put('/sala/:codigo', authenticate, salasController.updateSala)
+router.post('/sala/resposta-aluno', authenticate, salasController.criarSalaAlunoResposta);
 
 router.post('/login',loginController.login)
 router.get('/eu', pegarUsuarioDoToken)
