@@ -216,18 +216,22 @@ async function getPerguntasQuizMaterias(req, res) {
 
 async function getPerguntasQuizMateria(req, res) {
     const { eloId, turmaId, nmMateria,salaId } = req.params;
-   
+
     const sala_id = parseInt(salaId)
     const eloid = parseInt(eloId);
     const turmaid = parseInt(turmaId);
+    console.log('sala_id',sala_id)
+    console.log('eloId',eloId)
+    console.log('turmaId',turmaId)
+    console.log('nmMateria',nmMateria)
+   
 
     const materia1 = await Materia.findOne({ where: { nome: nmMateria } });
+    console.log('materia1 id',materia1.id)
 
     if (!materia1) {
         return res.status(404).json({ error: 'Uma ou mais matérias não foram encontradas' });
     }
-
-    // Busca de perguntas para cada matéria
     const perguntasMateria1 = await Pergunta.findAll({
         where: {
             materia_id: materia1.id,
@@ -238,6 +242,7 @@ async function getPerguntasQuizMateria(req, res) {
         limit: 6    
     });
     
+    console.log('perguntasMateria1',perguntasMateria1)
 
     const perguntasTotais = [
         ...perguntasMateria1,
