@@ -8,27 +8,33 @@ import SalaAlunoResposta from "../models/SalaAlunoResposta.js"
 import Alternativa from "../models/Alternativa.js"
 import Pergunta from "../models/Pergunta.js"
 
-
 async function getEstatisticasByUser(req, res) {
-    const { id } = req.params;
+  const { id } = req.params;
 
   try {
-    // Quantidade de salas que o usuário participou (status 'encerrada')
+    // Quantidade de salas que o usuário participou (status 'encerrada' e tipo 'online')
     const total_disputas = await SalaAluno.count({
       include: {
         model: Sala,
         as: 'sala', // Alias definido nas associações
-        where: { status: 'encerrada' },
+        where: {
+          status: 'encerrada',
+          tipo: 'online'
+        }
       },
-      where: { usuario_id: id },
+      where: { usuario_id: id }
     });
 
-    // Quantidade de salas que o usuário ganhou
+    // Quantidade de salas que o usuário ganhou (status 'encerrada' e tipo 'online')
     const total_disputas_ganhas = await Sala.count({
-      where: { vencedor_id: id },
+      where: {
+        vencedor_id: id,
+        status: 'encerrada',
+        tipo: 'online'
+      }
     });
 
-    // Total de perguntas respondidas
+    // Total de perguntas respondidas em salas encerradas e tipo 'online'
     const total_perguntas = await SalaAlunoResposta.count({
       include: [
         {
@@ -36,25 +42,28 @@ async function getEstatisticasByUser(req, res) {
           as: 'sala_pergunta', // Alias definido nas associações
           include: {
             model: Sala,
-            as: 'sala', // Alias
-            where: { status: 'encerrada' },
-          },
+            as: 'sala',
+            where: {
+              status: 'encerrada',
+              tipo: 'online'
+            }
+          }
         },
         {
           model: SalaAluno,
           as: 'aluno', // Alias definido nas associações
-          where: { usuario_id: id },
-        },
-      ],
+          where: { usuario_id: id }
+        }
+      ]
     });
 
-    // Total de perguntas respondidas corretamente
+    // Total de perguntas respondidas corretamente em salas encerradas e tipo 'online'
     const total_perguntas_acertadas = await SalaAlunoResposta.count({
       include: [
         {
           model: Alternativa,
           as: 'alternativa', // Alias definido nas associações
-          where: { correta: true },
+          where: { correta: true }
         },
         {
           model: SalaPergunta,
@@ -62,21 +71,27 @@ async function getEstatisticasByUser(req, res) {
           include: {
             model: Sala,
             as: 'sala',
-            where: { status: 'encerrada' },
-          },
+            where: {
+              status: 'encerrada',
+              tipo: 'online'
+            }
+          }
         },
         {
           model: SalaAluno,
           as: 'aluno',
-          where: { usuario_id: id },
-        },
-      ],
+          where: { usuario_id: id }
+        }
+      ]
     });
 
-    console.log(total_disputas,
-        total_disputas_ganhas,
-        total_perguntas,
-        total_perguntas_acertadas,)
+    console.log(
+      total_disputas,
+      total_disputas_ganhas,
+      total_perguntas,
+      total_perguntas_acertadas
+    );
+
     return res.status(200).json({
       total_disputas,
       total_disputas_ganhas,
@@ -89,7 +104,6 @@ async function getEstatisticasByUser(req, res) {
   }
 }
 
-
 export default {
-    getEstatisticasByUser
-}
+  getEstatisticasByUser
+};

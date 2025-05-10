@@ -150,23 +150,30 @@ async function getUsers(req, res) {
 
     // Para cada usuário, calcular o win rate
     const usuariosComWinRate = await Promise.all(usuarios.map(async (usuario) => {
-      // Total de disputas: salas encerradas nas quais o usuário participou
+      // Total de disputas: salas encerradas e do tipo 'online' nas quais o usuário participou
       const total_disputas = await SalaAluno.count({
         include: {
           model: Sala,
           as: 'sala',
-          where: { status: 'encerrada' },
+          where: {
+            status: 'encerrada',
+            tipo: 'online',
+          },
         },
         where: { usuario_id: usuario.id }
       });
-
-      // Disputas ganhas: salas onde o usuário foi declarado vencedor
+    
+      // Disputas ganhas: salas encerradas e do tipo 'online' onde o usuário foi declarado vencedor
       const total_disputas_ganhas = await Sala.count({
-        where: { vencedor_id: usuario.id }
+        where: {
+          vencedor_id: usuario.id,
+          status: 'encerrada',
+          tipo: 'online',
+        }
       });
-
+    
       const winRate = total_disputas > 0 ? (total_disputas_ganhas / total_disputas) * 100 : 0;
-
+    
       return { ...usuario.toJSON(), winRate: winRate.toFixed(2) };
     }));
 
