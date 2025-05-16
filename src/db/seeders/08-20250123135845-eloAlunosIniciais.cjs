@@ -1457,7 +1457,7 @@ module.exports = {
       },
 
       {
-        usuario_id: 2,
+        usuario_id: 19,
         materia_id: 1,
         elo_id: 1,
         subelo_id: 1,

@@ -9,7 +9,7 @@ import './models/associations.js';
 import router from './routes/router.js';
 
 dotenv.config();
-
+console.log('process.env.FRONTEND_URL', process.env.FRONTEND_URL)
 const app = express();
 const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',

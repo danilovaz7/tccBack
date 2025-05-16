@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 
 
 async function login(req, res) {
+    console.log('bati aqui');
     const { email, senha } = req.body;
 
     if (!email || !senha) {
