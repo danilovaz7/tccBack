@@ -1,20 +1,7 @@
-# Usa uma imagem oficial do Node.js como imagem base
-FROM node:18
+FROM node:24.0
 
-# Define o diretório de trabalho dentro do container
-WORKDIR /app
-
-# Copia o package.json e package-lock.json para instalar dependências
-COPY package*.json ./
-
-# Instala as dependências
-RUN npm install
-
-# Copia o restante dos arquivos da aplicação
 COPY . .
 
-# Expõe a porta que a aplicação irá usar
-EXPOSE 3000
+RUN npm i
 
-# Comando para iniciar a aplicação
-CMD ["node", "./src/app.js"]
+CMD ['nodemon', './src/app.js']
