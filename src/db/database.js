@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize'
-
 import config from './config.js'
+
 let sequelize;
 
 if (process.env.NODE_ENV == 'production') {

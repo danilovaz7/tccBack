@@ -40,8 +40,8 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        nome: 'Vinicius junior',
-        email: 'vini@gmail.com',
+        nome: 'André Felipe',
+        email: 'and@gmail.com',
         senha: '000',
         genero: 'M',
         id_avatar: 10,
@@ -56,8 +56,8 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        nome: 'James Bond',
-        email: 'james@gmail.com',
+        nome: 'Gustavo Menezes',
+        email: 'gus@gmail.com',
         senha: '333',
         genero: 'M',
         id_avatar: 4,
@@ -72,8 +72,8 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        nome: 'Juliano Floss',
-        email: 'ju@gmail.com',
+        nome: 'Gabriel Cunha',
+        email: 'gab@gmail.com',
         senha: '555',
         genero: 'M',
         id_avatar: 6,
@@ -88,8 +88,8 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        nome: 'Lucas Inutilismo',
-        email: 'luc@gmail.com',
+        nome: 'João Ribeiro',
+        email: 'jao@gmail.com',
         senha: '789',
         genero: 'M',
         id_avatar: 8,
@@ -104,7 +104,7 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        nome: 'Charles Emaunuel',
+        nome: 'Vitor Gonzales',
         email: 'em@gmail.com',
         senha: '455',
         genero: 'M',
