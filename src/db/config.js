@@ -10,7 +10,7 @@ export default {
 		port: process.env.DB_PORT_DEV,
 		dialect: process.env.DB_DIALECT_DEV,
 		dialectOptions: {
-			decimalNumbers: true, // Força o Sequelize a retornar números
+			decimalNumbers: true, 
 		  },
 	},
 	production: {
@@ -21,7 +21,7 @@ export default {
 		port: process.env.DB_PORT,
 		dialect: process.env.DB_DIALECT,
 		dialectOptions: {
-			decimalNumbers: true, // Força o Sequelize a retornar números
+			decimalNumbers: true, 
 		  },
 	}
 }
