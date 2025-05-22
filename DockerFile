@@ -4,4 +4,4 @@ COPY . .
 
 RUN npm i
 
-CMD ['nodemon', './src/app.js']
+CMD ['node', './src/app.js']
