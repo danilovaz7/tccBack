@@ -1,7 +1,5 @@
 FROM node:24.0
 
-RUN npm config set user 0
-
 RUN config set unsafe-perm true
 
 COPY . .
