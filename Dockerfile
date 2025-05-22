@@ -4,4 +4,4 @@ COPY . .
 
 RUN npm i
 
-CMD ["node", "./src/app.js"]
+CMD ["npm", "run", "start:prod"]
