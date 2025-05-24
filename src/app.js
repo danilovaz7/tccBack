@@ -12,11 +12,12 @@ dotenv.config();
 console.log('process.env.FRONTEND_URL', process.env.FRONTEND_URL)
 const app = express();
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: process.env.FRONTEND_URL || 'https://osgk008kk4ok08kwwsc0o4gw.212.85.1.115.sslip.io',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
+
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
